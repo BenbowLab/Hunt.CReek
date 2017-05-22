@@ -1,0 +1,708 @@
+# 2014 Hunt Creek Carcass (Submission 1)
+
+################################
+# 1. prep metadata
+
+#Sample List & Mapping File
+
+SampleID	BarcodeSequence	LinkerPrimerSequence	Month	Day	YYYY	Date	Reach	Subreach	Source	Total_Biofilm_Growth	Total_Biofilm_Growth_PostCarcass	Year	Description
+HC.1	AACGCTGAATCGTACG	N	10	3	2014	10/3/14	Control	I	Biofilm	14	0	1	HCUSI3Oct2014BF
+HC.2	TGCTCGTACGTGAGTG	N	10	3	2014	10/3/14	Control	II	Biofilm	14	0	1	HCUSII3Oct2014BF
+HC.3	GCGTATACGGATATCT	N	10	3	2014	10/3/14	Control	III	Biofilm	14	0	1	HCUSIII3Oct2014BF
+HC.4	ATAGTACCAGAGTCAC	N	10	3	2014	10/3/14	Salmon	I	Biofilm	14	0	1	HCDSI3Oct2014BF
+HC.5	CGAAGTATATCGTACG	N	10	3	2014	10/3/14	Salmon	II	Biofilm	14	0	1	HCDSII3Oct2014BF
+HC.6	CGTAGCGACGTTACTA	N	10	3	2014	10/3/14	Salmon	III	Biofilm	14	0	1	HCDSIII3Oct2014BF
+HC.7	TCTCTATGGGATATCT	N	10	18	2014	10/18/14	Control	I	Biofilm	28	14	1	HCUSI18Oct2014BF
+HC.8	CGTAGCGAACTATCTG	N	10	18	2014	10/18/14	Control	II	Biofilm	28	14	1	HCUSII18Oct2014BF
+HC.9	GCGTATACGACACCGT	N	10	18	2014	10/18/14	Control	III	Biofilm	28	14	1	HCUSIII18Oct2014BF
+HC.10	CTCGACTTGGATATCT	N	10	18	2014	10/18/14	Salmon	I	Biofilm	28	14	1	HCDSI18Oct2014BF
+HC.11	GCGTATACCGTTACTA	N	10	18	2014	10/18/14	Salmon	II	Biofilm	28	14	1	HCDSII18Oct2014BF
+HC.12	GCGTATACTACGAGAC	N	10	18	2014	10/18/14	Salmon	III	Biofilm	28	14	1	HCDSIII18Oct2014BF
+HC.13	GCGTATACCTACTATA	N	10	4	2014	10/4/14	Salmon	I	Carcass	0	0	1	HCDSI4Oct2014C1
+HC.14	GCGTATACGTCAGATA	N	10	4	2014	10/4/14	Salmon	I	Carcass	0	0	1	HCDSI4Oct2014C2
+HC.15	GCGTATACAGAGTCAC	N	10	4	2014	10/4/14	Salmon	I	Carcass	0	0	1	HCDSI4Oct2014C3
+HC.16	GTAACGAGCTACTATA	N	10	4	2014	10/4/14	Salmon	II	Carcass	0	0	1	HCDSII4Oct2014C4
+HC.17	TAGCAGCTACTATCTG	N	10	4	2014	10/4/14	Salmon	II	Carcass	0	0	1	HCDSII4Oct2014C5
+HC.18	GATCTACGGATCGTGT	N	10	4	2014	10/4/14	Salmon	II	Carcass	0	0	1	HCDSII4Oct2014C6
+HC.19	GATCTACGTACGAGAC	N	10	4	2014	10/4/14	Salmon	III	Carcass	0	0	1	HCDSIII4Oct2014C7
+HC.20	ATAGTACCTCGACGAG	N	10	4	2014	10/4/14	Salmon	III	Carcass	0	0	1	HCDSIII4Oct2014C8
+HC.21	GCGTATACGATCGTGT	N	10	4	2014	10/4/14	Salmon	III	Carcass	0	0	1	HCDSIII4Oct2014C9
+HC.22	GTAACGAGACGTCTCG	N	3	12	2015	3/12/15	Salmon	III	Biofilm	175	161	1	HCBF13
+HC.23	GCGTATACACGTCTCG	N	3	12	2015	3/12/15	Salmon	II	Biofilm	175	161	1	HCBF14
+HC.24	GTAACGAGTACGAGAC	N	3	12	2015	3/12/15	Salmon	I	Biofilm	175	161	1	HCBF15
+HC.25	CGTAGCGATCGACGAG	N	3	12	2015	3/12/15	Control	III	Biofilm	175	161	1	HCBF16
+HC.26	GATCTACGGTCAGATA	N	3	12	2015	3/12/15	Control	II	Biofilm	175	161	1	HCBF17
+HC.27	ACGTGCGCGATCGTGT	N	3	12	2015	3/12/15	Control	I	Biofilm	175	161	1	HCBF18
+HC.28	GTAACGAGCTACTATA	N	5	12	2015	5/12/15	Salmon	III	Biofilm	236	222	1	HCBF19
+HC.29	GCGTATACGATCGTGT	N	5	12	2015	5/12/15	Salmon	II	Biofilm	236	222	1	HCBF20
+HC.30	ACGTGCGCTACGAGAC	N	5	12	2015	5/12/15	Salmon	I	Biofilm	236	222	1	HCBF21
+HC.31	TAGCAGCTAGAGTCAC	N	5	12	2015	5/12/15	Control	III	Biofilm	236	222	1	HCBF22
+HC.32	TCTCTATGGTCAGATA	N	5	12	2015	5/12/15	Control	II	Biofilm	236	222	1	HCBF23
+HC.33	GTAACGAGGATCGTGT	N	5	12	2015	5/12/15	Control	I	Biofilm	236	222	1	HCBF24
+HC.34	ATAGTACCTCGACGAG	N	6	23	2015	6/23/15	Salmon	III	Biofilm	278	264	1	HCBF25
+HC.35	TCTCTATGAGAGTCAC	N	6	23	2015	6/23/15	Salmon	II	Biofilm	278	264	1	HCBF26
+HC.36	ACGTGCGCAGAGTCAC	N	6	23	2015	6/23/15	Salmon	I	Biofilm	278	264	1	HCBF27
+HC.37	CGTAGCGAGATCGTGT	N	6	23	2015	6/23/15	Control	III	Biofilm	278	264	1	HCBF28
+HC.38	GATCTACGCTACTATA	N	6	23	2015	6/23/15	Control	II	Biofilm	278	264	1	HCBF29
+HC.39	TAGCAGCTGTCAGATA	N	6	23	2015	6/23/15	Control	I	Biofilm	278	264	1	HCBF30
+HC.40	TCTCTATGTACGAGAC	N	8	4	2015	8/4/15	Salmon	III	Biofilm	320	306	1	HCBF31
+HC.41	AACGCTGAGATCGTGT	N	8	4	2015	8/4/15	Salmon	II	Biofilm	320	306	1	HCBF32
+HC.42	CGAAGTATTCGACGAG	N	8	4	2015	8/4/15	Salmon	I	Biofilm	320	306	1	HCBF33
+HC.43	CGTAGCGAACGTCTCG	N	8	4	2015	8/4/15	Control	III	Biofilm	320	306	1	HCBF34
+HC.44	GCGTATACCTACTATA	N	8	4	2015	8/4/15	Control	II	Biofilm	320	306	1	HCBF35
+HC.45	GATCTACGTCGACGAG	N	8	4	2015	8/4/15	Control	I	Biofilm	320	306	1	HCBF36
+HC.46	GCGTATACCGTTACTA	N	9	5	2014	9/5/14	Salmon	NA	Rhyacophila	0	0	1	HCI1
+HC.47	GATCTACGCGTTACTA	N	9	5	2014	9/5/14	Salmon	NA	Stegopterna	0	0	1	HCI2
+HC.48	TGCTCGTAGATCGTGT	N	9	5	2014	9/5/14	Salmon	NA	Baetis	0	0	1	HCI3
+HC.49	ACGTGCGCCTACTATA	N	3	12	2015	3/12/15	Salmon	NA	Rhyacophila	0	161	1	HCI4
+HC.50	GCGTATACAGAGTCAC	N	3	12	2015	3/12/15	Salmon	NA	Stegopterna	0	161	1	HCI5
+HC.51	TGCTCGTAGTCAGATA	N	3	12	2015	3/12/15	Salmon	NA	Baetis	0	161	1	HCI6
+HC.52	ACGTGCGCTCGACGAG	N	3	12	2015	3/12/15	Control	NA	Rhyacophila	0	161	1	HCI7
+HC.53	GTAACGAGTCGACGAG	N	3	12	2015	3/12/15	Control	NA	Stegopterna	0	161	1	HCI8
+HC.54	ATAGTACCTACGAGAC	N	3	12	2015	3/12/15	Control	NA	Baetis	0	161	1	HCI9
+HC.55	CGTAGCGATACGAGAC	N	6	23	2015	6/23/15	Salmon	NA	Rhyacophila	0	264	1	HCI10
+HC.56	ACGTGCGCACGTCTCG	N	6	23	2015	6/23/15	Salmon	NA	Stegopterna	0	264	1	HCI11
+HC.57	AACGCTGACTACTATA	N	6	23	2015	6/23/15	Salmon	NA	Baetis	0	264	1	HCI12
+HC.58	GTCTGCTATAGCGAGT	N	10	4	2015	10/4/15	Salmon	III	Biofilm	14	0	2	HCDSIII4Oct2015BF
+HC.59	TAGTCTCCTCATCGAG	N	10	4	2015	10/4/15	Salmon	II	Biofilm	14	0	2	HCDSII4Oct2015BF
+HC.60	CGAGCGACGACACCGT	N	10	4	2015	10/4/15	Salmon	I	Biofilm	14	0	2	HCDSI4Oct2015BF
+HC.61	TAGTCTCCCTGCGTGT	N	10	4	2015	10/4/15	Control	III	Biofilm	14	0	2	HCUSIII4Oct2015BF
+HC.62	TAGTCTCCGGATATCT	N	10	4	2015	10/4/15	Control	II	Biofilm	14	0	2	HCUSII4Oct2015BF
+HC.63	TAGTCTCCTAGCGAGT	N	10	4	2015	10/4/15	Control	I	Biofilm	14	0	2	HCUSI4Oct2015BF
+HC.64	TGAGTACGCTGCGTGT	N	10	25	2015	10/25/15	Salmon	III	Biofilm	35	16	2	HCDSIII25Oct2015BF
+HC.65	CTGCGTAGCGTGAGTG	N	10	25	2015	10/25/15	Salmon	II	Biofilm	35	16	2	HCDSII25Oct2015BF
+HC.66	ACGCTACTCTGCGTGT	N	10	25	2015	10/25/15	Salmon	I	Biofilm	35	16	2	HCDSI25Oct2015BF
+HC.67	TAGTCTCCCGTGAGTG	N	10	25	2015	10/25/15	Control	III	Biofilm	35	16	2	HCUSIII25Oct2015BF
+HC.68	ACTCACTGGGATATCT	N	10	25	2015	10/25/15	Control	II	Biofilm	35	16	2	HCUSII25Oct2015BF
+HC.69	ACGCTACTTAGCGAGT	N	10	25	2015	10/25/15	Control	I	Biofilm	35	16	2	HCUSI25Oct2015BF
+HC.70	ACGCTACTGGATATCT	N	10	9	2015	10/9/15	Salmon	I	Carcass	0	0	2	C1
+HC.71	TGAGTACGTCATCGAG	N	10	9	2015	10/9/15	Salmon	I	Carcass	0	0	2	C3
+HC.72	GACATAGTCTGCGTGT	N	10	9	2015	10/9/15	Salmon	I	Carcass	0	0	2	C5
+HC.73	CTGCGTAGTCATCGAG	N	10	9	2015	10/9/15	Salmon	II	Carcass	0	0	2	C12
+HC.74	TGAGTACGGGATATCT	N	10	9	2015	10/9/15	Salmon	II	Carcass	0	0	2	C13
+HC.75	ACTACGACCGTGAGTG	N	10	9	2015	10/9/15	Salmon	II	Carcass	0	0	2	C14
+HC.76	CGAGCGACTAGCGAGT	N	10	9	2015	10/9/15	Salmon	III	Carcass	0	0	2	C17
+HC.77	CGAGCGACACTATCTG	N	10	9	2015	10/9/15	Salmon	III	Carcass	0	0	2	C18
+HC.78	ACTACGACATCGTACG	N	10	9	2015	10/9/15	Salmon	III	Carcass	0	0	2	C19
+HC.79	ACTACGACTAGCGAGT	N	10	9	2015	10/9/15	Salmon	III	Carcass	0	0	2	C20
+HC.80	ATAGTACCTACGAGAC	N	6	30	2016	6/30/16	Control	I	Biofilm	279	265	2	HCUSI30June2016BF
+HC.81	GTAACGAGTAGCGAGT	N	6	30	2016	6/30/16	Control	II	Biofilm	279	265	2	HCUSII30June2016BF
+HC.82	CTCGACTTCGTGAGTG	N	6	30	2016	6/30/16	Control	III	Biofilm	279	265	2	HCUSIII30June2016BF
+HC.83	ATAGTACCTCATCGAG	N	6	30	2016	6/30/16	Salmon	I	Biofilm	279	265	2	HCDSI30June2016BF
+HC.84	GATCTACGTAGCGAGT	N	6	30	2016	6/30/16	Salmon	II	Biofilm	279	265	2	HCDSII30June2016BF
+HC.85	GATCTACGGACACCGT	N	6	30	2016	6/30/16	Salmon	III	Biofilm	279	265	2	HCDSIII30June2016BF
+HC.86	CGTAGCGAACGTCTCG	N	8	4	2015	8/4/15	Salmon	NA	Baetis	320	306	1	B
+HC.87	GTAACGAGCGTTACTA	N	8	4	2015	8/4/15	Salmon	NA	Baetis	320	306	1	C
+HC.88	CGAAGTATAGAGTCAC	N	8	4	2015	8/4/15	Control	NA	Baetis	320	306	1	D
+HC.89	TGCTCGTAGTCAGATA	N	8	4	2015	8/4/15	Control	NA	Baetis	320	306	1	E
+HC.90	ATAGTACCTACGAGAC	N	8	4	2015	8/4/15	Control	NA	Baetis	320	306	1	F
+HC.91	TCTCTATGCTGCGTGT	N	3	19	2016	3/19/16	Salmon	III	Biofilm	176	162	2	HCDSIII19Mar2016BF
+HC.92	TAGCAGCTATCGTACG	N	3	19	2016	3/19/16	Salmon	II	Biofilm	176	162	2	HCDSII19Mar2016BF
+HC.93	ACGTGCGCTAGCGAGT	N	3	19	2016	3/19/16	Salmon	I	Biofilm	176	162	2	HCDSI19Mar2016BF
+HC.94	CGAAGTATATCGTACG	N	3	19	2016	3/19/16	Control	III	Biofilm	176	162	2	HCUSIII19Mar2016BF
+HC.95	GTAACGAGCTGCGTGT	N	3	19	2016	3/19/16	Control	II	Biofilm	176	162	2	HCUSII19Mar2016BF
+HC.96	CGAAGTATTAGCGAGT	N	3	19	2016	3/19/16	Control	I	Biofilm	176	162	2	HCUSI19Mar2016BF
+
+#Sequence Reads
+
+HC_1_AACGCTGA-ATCGTACG_L001_R2_001.fastq
+HC_1_AACGCTGA-ATCGTACG_L001_R2_001.fastq
+
+HC_2_TGCTCGTA-CGTGAGTG_L001_R1_001.fastq
+HC_2_TGCTCGTA-CGTGAGTG_L001_R2_001.fastq
+
+HC_3_GCGTATAC-GGATATCT_L001_R1_001.fastq
+HC_3_GCGTATAC-GGATATCT_L001_R2_001.fastq
+
+HC_4_ATAGTACC-AGAGTCAC_L001_R1_001.fastq
+HC_4_ATAGTACC-AGAGTCAC_L001_R2_001.fastq
+
+HC_5_CGAAGTAT-ATCGTACG_L001_R1_001.fastq
+HC_5_CGAAGTAT-ATCGTACG_L001_R2_001.fastq
+
+HC_6_CGTAGCGA-CGTTACTA_L001_R1_001.fastq
+HC_6_CGTAGCGA-CGTTACTA_L001_R2_001.fastq
+
+HC_7_TCTCTATG-GGATATCT_L001_R1_001.fastq
+HC_7_TCTCTATG-GGATATCT_L001_R2_001.fastq
+
+HC_8_CGTAGCGA-ACTATCTG_L001_R1_001.fastq
+HC_8_CGTAGCGA-ACTATCTG_L001_R2_001.fastq
+
+HC_9_GCGTATAC-GACACCGT_L001_R1_001.fastq
+HC_9_GCGTATAC-GACACCGT_L001_R2_001.fastq
+
+HC_10_CTCGACT-TGGATATCT_L001_R1_001.fastq
+HC_10_CTCGACT-TGGATATCT_L001_R2_001.fastq
+
+HC_11_GCGTATA-CCGTTACTA_L001_R1_001.fastq
+HC_11_GCGTATA-CCGTTACTA_L001_R2_001.fastq
+
+HC_12_GCGTATA-CTACGAGAC_L001_R1_001.fastq
+HC_12_GCGTATA-CTACGAGAC_L001_R2_001.fastq
+
+HC_13_GCGTATAC-CTACTATA_L001_R1_001.fastq
+HC_13_GCGTATAC-CTACTATA_L001_R2_001.fastq
+
+HC_14_GCGTATAC-GTCAGATA_L001_R1_001.fastq
+HC_14_GCGTATAC-GTCAGATA_L001_R2_001.fastq
+
+HC_15_GCGTATAC-AGAGTCAC_L001_R1_001.fastq
+HC_15_GCGTATAC-AGAGTCAC_L001_R2_001.fastq
+
+HC_16_GTAACGAG-CTACTATA_L001_R1_001.fastq
+HC_16_GTAACGAG-CTACTATA_L001_R2_001.fastq
+
+HC_17_TAGCAGCT-ACTATCTG_L001_R1_001.fastq
+HC_17_TAGCAGCT-ACTATCTG_L001_R2_001.fastq
+
+HC_18_GATCTACG-GATCGTGT_L001_R1_001.fastq
+HC_18_GATCTACG-GATCGTGT_L001_R2_001.fastq
+
+HC_19_GATCTACG-TACGAGAC_L001_R1_001.fastq
+HC_19_GATCTACG-TACGAGAC_L001_R2_001.fastq
+
+HC_20_ATAGTACC-TCGACGAG_L001_R1_001.fastq
+HC_20_ATAGTACC-TCGACGAG_L001_R2_001.fastq
+
+HC_21_GCGTATAC-GATCGTGT_L001_R1_001.fastq
+HC_21_GCGTATAC-GATCGTGT_L001_R2_001.fastq
+
+HC_22_GTAACGAG-ACGTCTCG_L001_R1_001.fastq
+HC_22_GTAACGAG-ACGTCTCG_L001_R2_001.fastq
+
+HC_23_GCGTATAC-ACGTCTCG_L001_R1_001.fastq
+HC_23_GCGTATAC-ACGTCTCG_L001_R2_001.fastq
+
+HC_24_GTAACGAG-TACGAGAC_L001_R1_001.fastq
+HC_24_GTAACGAG-TACGAGAC_L001_R2_001.fastq
+
+HC_25_CGTAGCGA-TCGACGAG_L001_R1_001.fastq
+HC_25_CGTAGCGA-TCGACGAG_L001_R2_001.fastq
+
+HC_26_GATCTACG-GTCAGATA_L001_R1_001.fastq
+HC_26_GATCTACG-GTCAGATA_L001_R2_001.fastq
+
+HC_27_ACGTGCGC-GATCGTGT_L001_R1_001.fastq
+HC_27_ACGTGCGC-GATCGTGT_L001_R2_001.fastq
+
+HC_28_GTAACGAG-CTACTATA_L001_R1_001.fastq
+HC_28_GTAACGAG-CTACTATA_L001_R2_001.fastq
+
+HC_29_GCGTATAC-GATCGTGT_L001_R1_001.fastq
+HC_29_GCGTATAC-GATCGTGT_L001_R2_001.fastq
+
+HC_30_ACGTGCGC-TACGAGAC_L001_R1_001.fastq
+HC_30_ACGTGCGC-TACGAGAC_L001_R2_001.fastq
+
+HC_31_TAGCAGCT-AGAGTCAC_L001_R1_001.fastq
+HC_31_TAGCAGCT-AGAGTCAC_L001_R2_001.fastq
+
+HC_32_TCTCTATG-GTCAGATA_L001_R1_001.fastq
+HC_32_TCTCTATG-GTCAGATA_L001_R2_001.fastq
+
+HC_33_GTAACGAG-GATCGTGT_L001_R1_001.fastq
+HC_33_GTAACGAG-GATCGTGT_L001_R2_001.fastq
+
+HC_34_ATAGTACC-TCGACGAG_L001_R1_001.fastq
+HC_34_ATAGTACC-TCGACGAG_L001_R2_001.fastq
+
+HC_35_TCTCTATG-AGAGTCAC_L001_R1_001.fastq
+HC_35_TCTCTATG-AGAGTCAC_L001_R2_001.fastq
+
+HC_36_ACGTGCGC-AGAGTCAC_L001_R1_001.fastq
+HC_36_ACGTGCGC-AGAGTCAC_L001_R2_001.fastq
+
+HC_37_CGTAGCGA-GATCGTGT_L001_R1_001.fastq
+HC_37_CGTAGCGA-GATCGTGT_L001_R2_001.fastq
+
+HC_38_GATCTACG-CTACTATA_L001_R1_001.fastq
+HC_38_GATCTACG-CTACTATA_L001_R2_001.fastq
+
+HC_39_TAGCAGCT-GTCAGATA_L001_R1_001.fastq
+HC_39_TAGCAGCT-GTCAGATA_L001_R2_001.fastq
+
+HC_40_TCTCTATG-TACGAGAC_L001_R1_001.fastq
+HC_40_TCTCTATG-TACGAGAC_L001_R2_001.fastq
+
+HC_41_AACGCTGA-GATCGTGT_L001_R1_001.fastq
+HC_41_AACGCTGA-GATCGTGT_L001_R2_001.fastq
+
+HC_42_CGAAGTAT-TCGACGAG_L001_R1_001.fastq
+HC_42_CGAAGTAT-TCGACGAG_L001_R2_001.fastq
+
+HC_43_CGTAGCGA-ACGTCTCG_L001_R1_001.fastq
+HC_43_CGTAGCGA-ACGTCTCG_L001_R2_001.fastq
+
+HC_44_GCGTATAC-CTACTATA_L001_R1_001.fastq
+HC_44_GCGTATAC-CTACTATA_L001_R2_001.fastq
+
+HC_45_GATCTACG-TCGACGAG_L001_R1_001.fastq
+HC_45_GATCTACG-TCGACGAG_L001_R2_001.fastq
+
+HC_46_GCGTATAC-CGTTACTA_L001_R1_001.fastq
+HC_46_GCGTATAC-CGTTACTA_L001_R2_001.fastq
+
+HC_47_GATCTACG-CGTTACTA_L001_R1_001.fastq
+HC_47_GATCTACG-CGTTACTA_L001_R2_001.fastq
+
+HC_48_TGCTCGTA-GATCGTGT_L001_R1_001.fastq
+HC_48_TGCTCGTA-GATCGTGT_L001_R2_001.fastq
+
+HC_49_ACGTGCGC-CTACTATA_L001_R1_001.fastq
+HC_49_ACGTGCGC-CTACTATA_L001_R2_001.fastq
+
+HC_50_GCGTATAC-AGAGTCAC_L001_R1_001.fastq
+HC_50_GCGTATAC-AGAGTCAC_L001_R2_001.fastq
+
+HC_51_TGCTCGTA-GTCAGATA_L001_R1_001.fastq
+HC_51_TGCTCGTA-GTCAGATA_L001_R2_001.fastq
+
+HC_52_ACGTGCGC-TCGACGAG_L001_R1_001.fastq
+HC_52_ACGTGCGC-TCGACGAG_L001_R2_001.fastq
+
+HC_53_GTAACGAG-TCGACGAG_L001_R1_001.fastq
+HC_53_GTAACGAG-TCGACGAG_L001_R2_001.fastq
+
+HC_54_ATAGTACC-TACGAGAC_L001_R1_001.fastq
+HC_54_ATAGTACC-TACGAGAC_L001_R2_001.fastq
+
+HC_55_CGTAGCGA-TACGAGAC_L001_R1_001.fastq
+HC_55_CGTAGCGA-TACGAGAC_L001_R2_001.fastq
+
+HC_56_ACGTGCGC-ACGTCTCG_L001_R1_001.fastq
+HC_56_ACGTGCGC-ACGTCTCG_L001_R2_001.fastq
+
+HC_57_AACGCTGA-CTACTATA_L001_R1_001.fastq
+HC_57_AACGCTGA-CTACTATA_L001_R2_001.fastq
+
+HC_58_GTCTGCTA-TAGCGAGT_L001_R1_001.fastq
+HC_58_GTCTGCTA-TAGCGAGT_L001_R2_001.fastq
+
+HC_59_TAGTCTCC-TCATCGAG_L001_R1_001.fastq
+HC_59_TAGTCTCC-TCATCGAG_L001_R2_001.fastq
+
+HC_60_CGAGCGAC-GACACCGT_L001_R1_001.fastq
+HC_60_CGAGCGAC-GACACCGT_L001_R2_001.fastq
+
+HC_61_TAGTCTCC-CTGCGTGT_L001_R1_001.fastq
+HC_61_TAGTCTCC-CTGCGTGT_L001_R2_001.fastq
+
+HC_62_TAGTCTCC-GGATATCT_L001_R1_001.fastq
+HC_62_TAGTCTCC-GGATATCT_L001_R2_001.fastq
+
+HC_63_TAGTCTCC-TAGCGAGT_L001_R1_001.fastq
+HC_63_TAGTCTCC-TAGCGAGT_L001_R2_001.fastq
+
+HC_64_TGAGTACG-CTGCGTGT_L001_R1_001.fastq
+HC_64_TGAGTACG-CTGCGTGT_L001_R2_001.fastq
+
+HC_65_CTGCGTAG-CGTGAGTG_L001_R1_001.fastq
+HC_65_CTGCGTAG-CGTGAGTG_L001_R2_001.fastq
+
+HC_66_ACGCTACT-CTGCGTGT_L001_R1_001.fastq
+HC_66_ACGCTACT-CTGCGTGT_L001_R2_001.fastq
+
+HC_67_TAGTCTCC-CGTGAGTG_L001_R1_001.fastq
+HC_67_TAGTCTCC-CGTGAGTG_L001_R2_001.fastq
+
+HC_68_ACTCACTG-GGATATCT_L001_R1_001.fastq
+HC_68_ACTCACTG-GGATATCT_L001_R2_001.fastq
+
+HC_69_ACGCTACT-TAGCGAGT_L001_R1_001.fastq
+HC_69_ACGCTACT-TAGCGAGT_L001_R2_001.fastq
+
+HC_70_ACGCTACT-GGATATCT_L001_R1_001.fastq
+HC_70_ACGCTACT-GGATATCT_L001_R2_001.fastq
+
+HC_71_TGAGTACG-TCATCGAG_L001_R1_001.fastq
+HC_71_TGAGTACG-TCATCGAG_L001_R2_001.fastq
+
+HC_72_GACATAGT-CTGCGTGT_L001_R1_001.fastq
+HC_72_GACATAGT-CTGCGTGT_L001_R2_001.fastq
+
+HC_73_CTGCGTAG-TCATCGAG_L001_R1_001.fastq
+HC_73_CTGCGTAG-TCATCGAG_L001_R2_001.fastq
+
+HC_74_TGAGTACG-GGATATCT_L001_R1_001.fastq
+HC_74_TGAGTACG-GGATATCT_L001_R2_001.fastq
+
+HC_75_ACTACGAC-CGTGAGTG_L001_R1_001.fastq
+HC_75_ACTACGAC-CGTGAGTG_L001_R2_001.fastq
+
+HC_76_CGAGCGAC-TAGCGAGT_L001_R1_001.fastq
+HC_76_CGAGCGAC-TAGCGAGT_L001_R2_001.fastq
+
+HC_77_CGAGCGAC-ACTATCTG_L001_R1_001.fastq
+HC_77_CGAGCGAC-ACTATCTG_L001_R2_001.fastq
+
+HC_78_ACTACGAC-ATCGTACG_L001_R1_001.fastq
+HC_78_ACTACGAC-ATCGTACG_L001_R2_001.fastq
+
+HC_79_ACTACGAC-TAGCGAGT_L001_R1_001.fastq
+HC_79_ACTACGAC-TAGCGAGT_L001_R2_001.fastq
+
+HuntCr80_S87_L001_R1_001.fastq
+HuntCr80_S87_L001_R2_001.fastq
+
+HuntCr81_S60_L001_R1_001.fastq
+HuntCr81_S60_L001_R2_001.fastq
+
+HuntCr82_S122_L001_R1_001.fastq
+HuntCr82_S122_L001_R2_001.fastq
+
+HuntCr83_S112_L001_R1_001.fastq
+HuntCr83_S112_L001_R2_001.fastq
+
+HuntCr84_S58_L001_R1_001.fastq
+HuntCr84_S58_L001_R2_001.fastq
+
+HuntCr85_S178_L001_R1_001.fastq
+HuntCr85_S178_L001_R2_001.fastq
+
+HuntCr86_S119_L001_R1_001.fastq
+HuntCr86_S119_L001_R2_001.fastq
+
+HuntCr87_S35_L001_R1_001.fastq
+HuntCr87_S35_L001_R2_001.fastq
+
+HuntCr88_S51_L001_R1_001.fastq
+HuntCr88_S51_L001_R2_001.fastq
+
+HuntCr89_S187_L001_R1_001.fastq
+HuntCr89_S187_L001_R2_001.fastq
+
+HuntCr90_S137_L001_R1_001.fastq
+HuntCr90_S137_L001_R2_001.fastq
+
+HuntCr91_S80_L001_R1_001.fastq
+HuntCr91_S80_L001_R2_001.fastq
+
+HuntCr92_S6_L001_R1_001.fastq
+HuntCr92_S6_L001_R2_001.fastq
+
+HuntCr93_S62_L001_R1_001.fastq
+HuntCr93_S62_L001_R2_001.fastq
+
+HuntCr94_S4_L001_R1_001.fastq
+HuntCr94_S4_L001_R2_001.fastq
+
+HuntCr95_S84_L001_R1_001.fastq
+HuntCr95_S84_L001_R2_001.fastq
+
+HuntCr96_S52_L001_R1_001.fastq
+HuntCr96_S52_L001_R2_001.fastq
+
+
+
+################################
+
+# 2. join paired ends for each sample (individually)
+
+# cd to Desktop folder named "Core"
+
+cd ~/Desktop/Core/
+
+# join_paired_ends.py -f $PWD/forward_reads.fastq -r $PWD/reverse_reads.fastq -o $PWD/fastq-join_joined
+
+join_paired_ends.py -f HC_1_AACGCTGA-ATCGTACG_L001_R1_001.fastq -r HC_1_AACGCTGA-ATCGTACG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_1
+join_paired_ends.py -f HC_2_TGCTCGTA-CGTGAGTG_L001_R1_001.fastq -r HC_2_TGCTCGTA-CGTGAGTG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_2
+join_paired_ends.py -f HC_3_GCGTATAC-GGATATCT_L001_R1_001.fastq -r HC_3_GCGTATAC-GGATATCT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_3
+join_paired_ends.py -f HC_4_ATAGTACC-AGAGTCAC_L001_R1_001.fastq -r HC_4_ATAGTACC-AGAGTCAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_4
+join_paired_ends.py -f HC_5_CGAAGTAT-ATCGTACG_L001_R1_001.fastq -r HC_5_CGAAGTAT-ATCGTACG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_5
+join_paired_ends.py -f HC_6_CGTAGCGA-CGTTACTA_L001_R1_001.fastq -r HC_6_CGTAGCGA-CGTTACTA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_6
+join_paired_ends.py -f HC_7_TCTCTATG-GGATATCT_L001_R1_001.fastq -r HC_7_TCTCTATG-GGATATCT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_7
+join_paired_ends.py -f HC_8_CGTAGCGA-ACTATCTG_L001_R1_001.fastq -r HC_8_CGTAGCGA-ACTATCTG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_8
+join_paired_ends.py -f HC_9_GCGTATAC-GACACCGT_L001_R1_001.fastq -r HC_9_GCGTATAC-GACACCGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_9
+join_paired_ends.py -f HC_10_CTCGACTT-GGATATCT_L001_R1_001.fastq -r HC_10_CTCGACTT-GGATATCT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_10
+join_paired_ends.py -f HC_11_GCGTATAC-CGTTACTA_L001_R1_001.fastq -r HC_11_GCGTATAC-CGTTACTA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_11
+join_paired_ends.py -f HC_12_GCGTATAC-TACGAGAC_L001_R1_001.fastq -r HC_12_GCGTATAC-TACGAGAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_12
+join_paired_ends.py -f HC_13_GCGTATAC-CTACTATA_L001_R1_001.fastq -r HC_13_GCGTATAC-CTACTATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_13
+join_paired_ends.py -f HC_14_GCGTATAC-GTCAGATA_L001_R1_001.fastq -r HC_14_GCGTATAC-GTCAGATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_14
+join_paired_ends.py -f HC_15_GCGTATAC-AGAGTCAC_L001_R1_001.fastq -r HC_15_GCGTATAC-AGAGTCAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_15
+join_paired_ends.py -f HC_16_GTAACGAG-CTACTATA_L001_R1_001.fastq -r HC_16_GTAACGAG-CTACTATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_16
+join_paired_ends.py -f HC_17_TAGCAGCT-ACTATCTG_L001_R1_001.fastq -r HC_17_TAGCAGCT-ACTATCTG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_17
+join_paired_ends.py -f HC_18_GATCTACG-GATCGTGT_L001_R1_001.fastq -r HC_18_GATCTACG-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_18
+join_paired_ends.py -f HC_19_GATCTACG-TACGAGAC_L001_R1_001.fastq -r HC_19_GATCTACG-TACGAGAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_19
+join_paired_ends.py -f HC_20_ATAGTACC-TCGACGAG_L001_R1_001.fastq -r HC_20_ATAGTACC-TCGACGAG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_20
+join_paired_ends.py -f HC_21_GCGTATAC-GATCGTGT_L001_R1_001.fastq -r HC_21_GCGTATAC-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_21
+join_paired_ends.py -f HC_22_GTAACGAG-ACGTCTCG_L001_R1_001.fastq -r HC_22_GTAACGAG-ACGTCTCG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_22
+join_paired_ends.py -f HC_23_GCGTATAC-ACGTCTCG_L001_R1_001.fastq -r HC_23_GCGTATAC-ACGTCTCG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_23
+join_paired_ends.py -f HC_24_GTAACGAG-TACGAGAC_L001_R1_001.fastq -r HC_24_GTAACGAG-TACGAGAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_24
+join_paired_ends.py -f HC_25_CGTAGCGA-TCGACGAG_L001_R1_001.fastq -r HC_25_CGTAGCGA-TCGACGAG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_25
+join_paired_ends.py -f HC_26_GATCTACG-GTCAGATA_L001_R1_001.fastq -r HC_26_GATCTACG-GTCAGATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_26
+join_paired_ends.py -f HC_27_ACGTGCGC-GATCGTGT_L001_R1_001.fastq -r HC_27_ACGTGCGC-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_27
+join_paired_ends.py -f HC_28_GTAACGAG-CTACTATA_L001_R1_001.fastq -r HC_28_GTAACGAG-CTACTATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_28
+join_paired_ends.py -f HC_29_GCGTATAC-GATCGTGT_L001_R1_001.fastq -r HC_29_GCGTATAC-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_29
+join_paired_ends.py -f HC_30_ACGTGCGC-TACGAGAC_L001_R1_001.fastq -r HC_30_ACGTGCGC-TACGAGAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_30
+join_paired_ends.py -f HC_31_TAGCAGCT-AGAGTCAC_L001_R1_001.fastq -r HC_31_TAGCAGCT-AGAGTCAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_31
+join_paired_ends.py -f HC_32_TCTCTATG-GTCAGATA_L001_R1_001.fastq -r HC_32_TCTCTATG-GTCAGATA_L001_R2_001.fastq -o HC_fastq-join_joined/HC_32
+join_paired_ends.py -f HC_33_GTAACGAG-GATCGTGT_L001_R1_001.fastq -r HC_33_GTAACGAG-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_33
+join_paired_ends.py -f HC_34_ATAGTACC-TCGACGAG_L001_R1_001.fastq -r HC_34_ATAGTACC-TCGACGAG_L001_R2_001.fastq -o HC_fastq-join_joined/HC_34
+join_paired_ends.py -f HC_35_TCTCTATG-AGAGTCAC_L001_R1_001.fastq -r HC_35_TCTCTATG-AGAGTCAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_35
+join_paired_ends.py -f HC_36_ACGTGCGC-AGAGTCAC_L001_R1_001.fastq -r HC_36_ACGTGCGC-AGAGTCAC_L001_R2_001.fastq -o HC_fastq-join_joined/HC_36
+join_paired_ends.py -f HC_37_CGTAGCGA-GATCGTGT_L001_R1_001.fastq -r HC_37_CGTAGCGA-GATCGTGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_37
+join_paired_ends.py -f HC_38_GATCTACG-CTACTATA_L001_R1_001.fastq -r HC_38_GATCTACG-CTACTATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_38
+join_paired_ends.py -f HC_39_TAGCAGCT-GTCAGATA_L001_R1_001.fastq -r HC_39_TAGCAGCT-GTCAGATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_39
+join_paired_ends.py -f HC_40_TCTCTATG-TACGAGAC_L001_R1_001.fastq -r HC_40_TCTCTATG-TACGAGAC_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_40
+join_paired_ends.py -f HC_41_AACGCTGA-GATCGTGT_L001_R1_001.fastq -r HC_41_AACGCTGA-GATCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_41
+join_paired_ends.py -f HC_42_CGAAGTAT-TCGACGAG_L001_R1_001.fastq -r HC_42_CGAAGTAT-TCGACGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_42
+join_paired_ends.py -f HC_43_CGTAGCGA-ACGTCTCG_L001_R1_001.fastq -r HC_43_CGTAGCGA-ACGTCTCG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_43
+join_paired_ends.py -f HC_44_GCGTATAC-CTACTATA_L001_R1_001.fastq -r HC_44_GCGTATAC-CTACTATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_44
+join_paired_ends.py -f HC_45_GATCTACG-TCGACGAG_L001_R1_001.fastq -r HC_45_GATCTACG-TCGACGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_45
+join_paired_ends.py -f HC_46_GCGTATAC-CGTTACTA_L001_R1_001.fastq -r HC_46_GCGTATAC-CGTTACTA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_46
+join_paired_ends.py -f HC_47_GATCTACG-CGTTACTA_L001_R1_001.fastq -r HC_47_GATCTACG-CGTTACTA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_47
+join_paired_ends.py -f HC_48_TGCTCGTA-GATCGTGT_L001_R1_001.fastq -r HC_48_TGCTCGTA-GATCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_48
+join_paired_ends.py -f HC_49_ACGTGCGC-CTACTATA_L001_R1_001.fastq -r HC_49_ACGTGCGC-CTACTATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_49
+join_paired_ends.py -f HC_50_GCGTATAC-AGAGTCAC_L001_R1_001.fastq -r HC_50_GCGTATAC-AGAGTCAC_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_50
+join_paired_ends.py -f HC_51_TGCTCGTA-GTCAGATA_L001_R1_001.fastq -r HC_51_TGCTCGTA-GTCAGATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_51
+join_paired_ends.py -f HC_52_ACGTGCGC-TCGACGAG_L001_R1_001.fastq -r HC_52_ACGTGCGC-TCGACGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_52
+join_paired_ends.py -f HC_53_GTAACGAG-TCGACGAG_L001_R1_001.fastq -r HC_53_GTAACGAG-TCGACGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_53
+join_paired_ends.py -f HC_54_ATAGTACC-TACGAGAC_L001_R1_001.fastq -r HC_54_ATAGTACC-TACGAGAC_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_54
+join_paired_ends.py -f HC_55_CGTAGCGA-TACGAGAC_L001_R1_001.fastq -r HC_55_CGTAGCGA-TACGAGAC_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_55
+join_paired_ends.py -f HC_56_ACGTGCGC-ACGTCTCG_L001_R1_001.fastq -r HC_56_ACGTGCGC-ACGTCTCG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_56
+join_paired_ends.py -f HC_57_AACGCTGA-CTACTATA_L001_R1_001.fastq -r HC_57_AACGCTGA-CTACTATA_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_57
+join_paired_ends.py -f HC_58_GTCTGCTA-TAGCGAGT_L001_R1_001.fastq -r HC_58_GTCTGCTA-TAGCGAGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_58
+join_paired_ends.py -f HC_59_TAGTCTCC-TCATCGAG_L001_R1_001.fastq -r HC_59_TAGTCTCC-TCATCGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_59
+join_paired_ends.py -f HC_60_CGAGCGAC-GACACCGT_L001_R1_001.fastq -r HC_60_CGAGCGAC-GACACCGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_60
+join_paired_ends.py -f HC_61_TAGTCTCC-CTGCGTGT_L001_R1_001.fastq -r HC_61_TAGTCTCC-CTGCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_61
+join_paired_ends.py -f HC_62_TAGTCTCC-GGATATCT_L001_R1_001.fastq -r HC_62_TAGTCTCC-GGATATCT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_62
+join_paired_ends.py -f HC_63_TAGTCTCC-TAGCGAGT_L001_R1_001.fastq -r HC_63_TAGTCTCC-TAGCGAGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_63
+join_paired_ends.py -f HC_64_TGAGTACG-CTGCGTGT_L001_R1_001.fastq -r HC_64_TGAGTACG-CTGCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_64
+join_paired_ends.py -f HC_65_CTGCGTAG-CGTGAGTG_L001_R1_001.fastq -r HC_65_CTGCGTAG-CGTGAGTG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_65
+join_paired_ends.py -f HC_66_ACGCTACT-CTGCGTGT_L001_R1_001.fastq -r HC_66_ACGCTACT-CTGCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_66
+join_paired_ends.py -f HC_67_TAGTCTCC-CGTGAGTG_L001_R1_001.fastq -r HC_67_TAGTCTCC-CGTGAGTG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_67
+join_paired_ends.py -f HC_68_ACTCACTG-GGATATCT_L001_R1_001.fastq -r HC_68_ACTCACTG-GGATATCT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_68
+join_paired_ends.py -f HC_69_ACGCTACT-TAGCGAGT_L001_R1_001.fastq -r HC_69_ACGCTACT-TAGCGAGT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_69
+join_paired_ends.py -f HC_70_ACGCTACT-GGATATCT_L001_R1_001.fastq -r HC_70_ACGCTACT-GGATATCT_L001_R2_001.fastq -o HC_fastq-join_joined/HC_70
+join_paired_ends.py -f HC_71_TGAGTACG-TCATCGAG_L001_R1_001.fastq -r HC_71_TGAGTACG-TCATCGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_71
+join_paired_ends.py -f HC_72_GACATAGT-CTGCGTGT_L001_R1_001.fastq -r HC_72_GACATAGT-CTGCGTGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_72
+join_paired_ends.py -f HC_73_CTGCGTAG-TCATCGAG_L001_R1_001.fastq -r HC_73_CTGCGTAG-TCATCGAG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_73
+join_paired_ends.py -f HC_74_TGAGTACG-GGATATCT_L001_R1_001.fastq -r HC_74_TGAGTACG-GGATATCT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_74
+join_paired_ends.py -f HC_75_ACTACGAC-CGTGAGTG_L001_R1_001.fastq -r HC_75_ACTACGAC-CGTGAGTG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_75
+join_paired_ends.py -f HC_76_CGAGCGAC-TAGCGAGT_L001_R1_001.fastq -r HC_76_CGAGCGAC-TAGCGAGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_76
+join_paired_ends.py -f HC_77_CGAGCGAC-ACTATCTG_L001_R1_001.fastq -r HC_77_CGAGCGAC-ACTATCTG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_77
+join_paired_ends.py -f HC_78_ACTACGAC-ATCGTACG_L001_R1_001.fastq -r HC_78_ACTACGAC-ATCGTACG_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_78
+join_paired_ends.py -f HC_79_ACTACGAC-TAGCGAGT_L001_R1_001.fastq -r HC_79_ACTACGAC-TAGCGAGT_L001_R2_001.fastq -m SeqPrep -o HC_fastq-join_joined/HC_79
+join_paired_ends.py -f HuntCr80_S87_L001_R1_001.fastq -r HuntCr80_S87_L001_R2_001.fastq -o HC_fastq-join_joined/HC_80
+join_paired_ends.py -f HuntCr81_S60_L001_R1_001.fastq -r HuntCr81_S60_L001_R2_001.fastq -o HC_fastq-join_joined/HC_81
+join_paired_ends.py -f HuntCr82_S122_L001_R1_001.fastq -r HuntCr82_S122_L001_R2_001.fastq -o HC_fastq-join_joined/HC_82
+join_paired_ends.py -f HuntCr83_S112_L001_R1_001.fastq -r HuntCr83_S112_L001_R2_001.fastq -o HC_fastq-join_joined/HC_83
+join_paired_ends.py -f HuntCr84_S58_L001_R1_001.fastq -r HuntCr84_S58_L001_R2_001.fastq -o HC_fastq-join_joined/HC_84
+join_paired_ends.py -f HuntCr85_S178_L001_R1_001.fastq -r HuntCr85_S178_L001_R2_001.fastq -o HC_fastq-join_joined/HC_85
+join_paired_ends.py -f HuntCr86_S119_L001_R1_001.fastq -r HuntCr86_S119_L001_R2_001.fastq -o HC_fastq-join_joined/HC_86
+join_paired_ends.py -f HuntCr87_S35_L001_R1_001.fastq -r HuntCr87_S35_L001_R2_001.fastq -o HC_fastq-join_joined/HC_87
+join_paired_ends.py -f HuntCr88_S51_L001_R1_001.fastq -r HuntCr88_S51_L001_R2_001.fastq -o HC_fastq-join_joined/HC_88
+join_paired_ends.py -f HuntCr89_S187_L001_R1_001.fastq -r HuntCr89_S187_L001_R2_001.fastq -o HC_fastq-join_joined/HC_89
+join_paired_ends.py -f HuntCr90_S137_L001_R1_001.fastq -r HuntCr90_S137_L001_R2_001.fastq -o HC_fastq-join_joined/HC_90
+join_paired_ends.py -f HuntCr91_S80_L001_R1_001.fastq -r HuntCr91_S80_L001_R2_001.fastq -o HC_fastq-join_joined/HC_91
+join_paired_ends.py -f HuntCr92_S6_L001_R1_001.fastq -r HuntCr92_S6_L001_R2_001.fastq -o HC_fastq-join_joined/HC_92
+join_paired_ends.py -f HuntCr93_S62_L001_R1_001.fastq -r HuntCr93_S62_L001_R2_001.fastq -o HC_fastq-join_joined/HC_93
+join_paired_ends.py -f HuntCr94_S4_L001_R1_001.fastq -r HuntCr94_S4_L001_R2_001.fastq -o HC_fastq-join_joined/HC_94
+join_paired_ends.py -f HuntCr95_S84_L001_R1_001.fastq -r HuntCr95_S84_L001_R2_001.fastq -o HC_fastq-join_joined/HC_95
+join_paired_ends.py -f HuntCr96_S52_L001_R1_001.fastq -r HuntCr96_S52_L001_R2_001.fastq -o HC_fastq-join_joined/HC_96
+
+
+################################
+# 3. validate mapping file
+
+cd ~/Desktop/
+
+validate_mapping_file.py -m Hunt_Creek_Map.txt -o check.tab_mapping
+
+# make individual sample mapping files
+
+################################
+
+# 4. Demultiplexing and quality filtering (at Phred >= Q20) - use the *.join.fastq file after re-naming the file and moving those files to the desktop folder named "Joined", then cd ~/Desktop/Joined
+
+cd ~/Desktop/Joined/
+
+# split_libraries_fastq.py -i HC.txt -o /map/ -m map_HC.txt
+
+split_libraries_fastq.py -i HC_1.fastq --sample_id HC.1 -o ~/Desktop/Demultiplexed/HC/HC_1_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_2.fastq --sample_id HC.2 -o ~/Desktop/Demultiplexed/HC/HC_2_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_3.fastq --sample_id HC.3 -o ~/Desktop/Demultiplexed/HC/HC_3_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_4.fastq --sample_id HC.4 -o ~/Desktop/Demultiplexed/HC/HC_4_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_5.fastq --sample_id HC.5 -o ~/Desktop/Demultiplexed/HC/HC_5_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_6.fastq --sample_id HC.6 -o ~/Desktop/Demultiplexed/HC/HC_6_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_7.fastq --sample_id HC.7 -o ~/Desktop/Demultiplexed/HC/HC_7_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_8.fastq --sample_id HC.8 -o ~/Desktop/Demultiplexed/HC/HC_8_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_9.fastq --sample_id HC.9 -o ~/Desktop/Demultiplexed/HC/HC_9_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_10.fastq --sample_id HC.10 -o ~/Desktop/Demultiplexed/HC/HC_10_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_11.fastq --sample_id HC.11 -o ~/Desktop/Demultiplexed/HC/HC_11_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_12.fastq --sample_id HC.12 -o ~/Desktop/Demultiplexed/HC/HC_12_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_13.fastq --sample_id HC.13 -o ~/Desktop/Demultiplexed/HC/HC_13_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_14.fastq --sample_id HC.14 -o ~/Desktop/Demultiplexed/HC/HC_14_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_15.fastq --sample_id HC.15 -o ~/Desktop/Demultiplexed/HC/HC_15_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_16.fastq --sample_id HC.16 -o ~/Desktop/Demultiplexed/HC/HC_16_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_17.fastq --sample_id HC.17 -o ~/Desktop/Demultiplexed/HC/HC_17_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_18.fastq --sample_id HC.18 -o ~/Desktop/Demultiplexed/HC/HC_18_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_19.fastq --sample_id HC.19 -o ~/Desktop/Demultiplexed/HC/HC_19_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_20.fastq --sample_id HC.20 -o ~/Desktop/Demultiplexed/HC/HC_20_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_21.fastq --sample_id HC.21 -o ~/Desktop/Demultiplexed/HC/HC_21_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_22.fastq --sample_id HC.22 -o ~/Desktop/Demultiplexed/HC/HC_22_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_23.fastq --sample_id HC.23 -o ~/Desktop/Demultiplexed/HC/HC_23_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_24.fastq --sample_id HC.24 -o ~/Desktop/Demultiplexed/HC/HC_24_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_25.fastq --sample_id HC.25 -o ~/Desktop/Demultiplexed/HC/HC_25_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_26.fastq --sample_id HC.26 -o ~/Desktop/Demultiplexed/HC/HC_26_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_27.fastq --sample_id HC.27 -o ~/Desktop/Demultiplexed/HC/HC_27_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_28.fastq --sample_id HC.28 -o ~/Desktop/Demultiplexed/HC/HC_28_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_29.fastq --sample_id HC.29 -o ~/Desktop/Demultiplexed/HC/HC_29_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_30.fastq --sample_id HC.30 -o ~/Desktop/Demultiplexed/HC/HC_30_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_31.fastq --sample_id HC.31 -o ~/Desktop/Demultiplexed/HC/HC_31_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_32.fastq --sample_id HC.32 -o ~/Desktop/Demultiplexed/HC/HC_32_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_33.fastq --sample_id HC.33 -o ~/Desktop/Demultiplexed/HC/HC_33_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_34.fastq --sample_id HC.34 -o ~/Desktop/Demultiplexed/HC/HC_34_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_35.fastq --sample_id HC.35 -o ~/Desktop/Demultiplexed/HC/HC_35_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_36.fastq --sample_id HC.36 -o ~/Desktop/Demultiplexed/HC/HC_36_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_37.fastq --sample_id HC.37 -o ~/Desktop/Demultiplexed/HC/HC_37_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_38.gz --sample_id HC.38 -o ~/Desktop/Demultiplexed/HC/HC_38_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_39.gz --sample_id HC.39 -o ~/Desktop/Demultiplexed/HC/HC_39_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_40.gz --sample_id HC.40 -o ~/Desktop/Demultiplexed/HC/HC_40_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_41.gz --sample_id HC.41 -o ~/Desktop/Demultiplexed/HC/HC_41_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_42.gz --sample_id HC.42 -o ~/Desktop/Demultiplexed/HC/HC_42_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_43.gz --sample_id HC.43 -o ~/Desktop/Demultiplexed/HC/HC_43_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_44.gz --sample_id HC.44 -o ~/Desktop/Demultiplexed/HC/HC_44_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_45.gz --sample_id HC.45 -o ~/Desktop/Demultiplexed/HC/HC_45_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_46.gz --sample_id HC.46 -o ~/Desktop/Demultiplexed/HC/HC_46_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_47.gz --sample_id HC.47 -o ~/Desktop/Demultiplexed/HC/HC_47_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_48.gz --sample_id HC.48 -o ~/Desktop/Demultiplexed/HC/HC_48_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_49.gz --sample_id HC.49 -o ~/Desktop/Demultiplexed/HC/HC_49_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_50.gz --sample_id HC.50 -o ~/Desktop/Demultiplexed/HC/HC_50_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_51.gz --sample_id HC.51 -o ~/Desktop/Demultiplexed/HC/HC_51_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_52.gz --sample_id HC.52 -o ~/Desktop/Demultiplexed/HC/HC_52_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_53.gz --sample_id HC.53 -o ~/Desktop/Demultiplexed/HC/HC_53_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_54.gz --sample_id HC.54 -o ~/Desktop/Demultiplexed/HC/HC_54_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_55.gz --sample_id HC.55 -o ~/Desktop/Demultiplexed/HC/HC_55_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_56.gz --sample_id HC.56 -o ~/Desktop/Demultiplexed/HC/HC_56_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_57.gz --sample_id HC.57 -o ~/Desktop/Demultiplexed/HC/HC_57_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_58.gz --sample_id HC.58 -o ~/Desktop/Demultiplexed/HC/HC_58_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_59.gz --sample_id HC.59 -o ~/Desktop/Demultiplexed/HC/HC_59_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_60.gz --sample_id HC.60 -o ~/Desktop/Demultiplexed/HC/HC_60_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_61.gz --sample_id HC.61 -o ~/Desktop/Demultiplexed/HC/HC_61_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_62.gz --sample_id HC.62 -o ~/Desktop/Demultiplexed/HC/HC_62_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_63.gz --sample_id HC.63 -o ~/Desktop/Demultiplexed/HC/HC_63_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_64.gz --sample_id HC.64 -o ~/Desktop/Demultiplexed/HC/HC_64_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_65.gz --sample_id HC.65 -o ~/Desktop/Demultiplexed/HC/HC_65_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_66.gz --sample_id HC.66 -o ~/Desktop/Demultiplexed/HC/HC_66_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_67.gz --sample_id HC.67 -o ~/Desktop/Demultiplexed/HC/HC_67_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_68.gz --sample_id HC.68 -o ~/Desktop/Demultiplexed/HC/HC_68_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_69.fastq --sample_id HC.69 -o ~/Desktop/Demultiplexed/HC/HC_69_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_70.fastq --sample_id HC.70 -o ~/Desktop/Demultiplexed/HC/HC_70_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_71.gz --sample_id HC.71 -o ~/Desktop/Demultiplexed/HC/HC_71_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_72.gz --sample_id HC.72 -o ~/Desktop/Demultiplexed/HC/HC_72_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_73.gz --sample_id HC.73 -o ~/Desktop/Demultiplexed/HC/HC_73_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_74.gz --sample_id HC.74 -o ~/Desktop/Demultiplexed/HC/HC_74_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_75.gz --sample_id HC.75 -o ~/Desktop/Demultiplexed/HC/HC_75_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_76.gz --sample_id HC.76 -o ~/Desktop/Demultiplexed/HC/HC_76_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_77.gz --sample_id HC.77 -o ~/Desktop/Demultiplexed/HC/HC_77_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_78.gz --sample_id HC.78 -o ~/Desktop/Demultiplexed/HC/HC_78_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_79.gz --sample_id HC.79 -o ~/Desktop/Demultiplexed/HC/HC_79_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_80.fastq --sample_id HC.80 -o ~/Desktop/Demultiplexed/HC/HC_80_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_81.fastq --sample_id HC.81 -o ~/Desktop/Demultiplexed/HC/HC_81_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_82.fastq --sample_id HC.82 -o ~/Desktop/Demultiplexed/HC/HC_82_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_83.fastq --sample_id HC.83 -o ~/Desktop/Demultiplexed/HC/HC_83_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_84.fastq --sample_id HC.84 -o ~/Desktop/Demultiplexed/HC/HC_84_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_85.fastq --sample_id HC.85 -o ~/Desktop/Demultiplexed/HC/HC_85_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_86.fastq --sample_id HC.86 -o ~/Desktop/Demultiplexed/HC/HC_86_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_87.fastq --sample_id HC.87 -o ~/Desktop/Demultiplexed/HC/HC_87_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_88.fastq --sample_id HC.88 -o ~/Desktop/Demultiplexed/HC/HC_88_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_89.fastq --sample_id HC.89 -o ~/Desktop/Demultiplexed/HC/HC_89_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_90.fastq --sample_id HC.90 -o ~/Desktop/Demultiplexed/HC/HC_90_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_91.fastq --sample_id HC.91 -o ~/Desktop/Demultiplexed/HC/HC_91_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_92.fastq --sample_id HC.92 -o ~/Desktop/Demultiplexed/HC/HC_92_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_93.fastq --sample_id HC.93 -o ~/Desktop/Demultiplexed/HC/HC_93_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_94.fastq --sample_id HC.94 -o ~/Desktop/Demultiplexed/HC/HC_94_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_95.fastq --sample_id HC.95 -o ~/Desktop/Demultiplexed/HC/HC_95_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+split_libraries_fastq.py -i HC_96.fastq --sample_id HC.96 -o ~/Desktop/Demultiplexed/HC/HC_96_q20 -m ~/Desktop/Joined/Hunt_Creek_Map.txt -q 19 --barcode_type 'not-barcoded'
+
+# move all .fna files from individual SLOUT folders to the desktop folder "Demultiplexed"
+
+# 4(a). Concatenate the re-demultiplexed Illumina data  (check file size once this is completed)
+
+cd ~/Desktop/Demultiplexed/
+
+cat HC_1_seqs.fna HC_2_seqs.fna HC_3_seqs.fna HC_4_seqs.fna HC_5_seqs.fna HC_6_seqs.fna HC_7_seqs.fna HC_8_seqs.fna HC_9_seqs.fna HC_10_seqs.fna HC_11_seqs.fna HC_12_seqs.fna HC_13_seqs.fna HC_14_seqs.fna HC_15_seqs.fna HC_16_seqs.fna HC_17_seqs.fna HC_18_seqs.fna HC_19_seqs.fna HC_20_seqs.fna HC_21_seqs.fna HC_22_seqs.fna HC_23_seqs.fna HC_24_seqs.fna HC_25_seqs.fna HC_25_seqs.fna HC_26_seqs.fna HC_27_seqs.fna HC_28_seqs.fna HC_29_seqs.fna HC_30_seqs.fna HC_31_seqs.fna HC_32_seqs.fna HC_33_seqs.fna HC_34_seqs.fna HC_35_seqs.fna HC_35_seqs.fna HC_36_seqs.fna HC_37_seqs.fna HC_38_seqs.fna HC_39_seqs.fna HC_40_seqs.fna HC_41_seqs.fna HC_42_seqs.fna HC_43_seqs.fna HC_44_seqs.fna HC_45_seqs.fna HC_46_seqs.fna HC_47_seqs.fna HC_48_seqs.fna HC_49_seqs.fna HC_50_seqs.fna HC_51_seqs.fna HC_52_seqs.fna HC_53_seqs.fna HC_54_seqs.fna HC_55_seqs.fna HC_56_seqs.fna HC_57_seqs.fna HC_58_seqs.fna HC_59_seqs.fna HC_60_seqs.fna HC_61_seqs.fna HC_62_seqs.fna HC_63_seqs.fna HC_64_seqs.fna HC_65_seqs.fna HC_66_seqs.fna HC_67_seqs.fna HC_68_seqs.fna HC_69_seqs.fna HC_70_seqs.fna HC_71_seqs.fna HC_72_seqs.fna HC_73_seqs.fna HC_74_seqs.fna HC_75_seqs.fna HC_76_seqs.fna HC_77_seqs.fna HC_78_seqs.fna HC_79_seqs.fna HC_80_seqs.fna HC_81_seqs.fna HC_82_seqs.fna HC_83_seqs.fna HC_84_seqs.fna HC_85_seqs.fna HC_86_seqs.fna HC_87_seqs.fna HC_88_seqs.fna HC_89_seqs.fna HC_90_seqs.fna HC_91_seqs.fna HC_92_seqs.fna HC_93_seqs.fna HC_94_seqs.fna HC_95_seqs.fna HC_96_seqs.fna > HC.fna
+
+# validate demultiplexed concatenated file to make sure it's good for downstream analysis.
+
+validate_demultiplexed_fasta.py -m Hunt_Creek_Map.txt -i HC.fna
+
+# 5. determining taxonomy by hand (according to Schlaeppi et al.)
+
+# 5(a). picking OTUs using UCLUST
+
+pick_otus.py -i HC.fna -o HC_uclust_pick 
+
+# 5(b). picking a set with OTU representative sequences: py. -i = file from 5(a) - f = file from 4(a) -m = first or most_abundant
+
+pick_rep_set.py -i HC_otus.txt -f HC.fna -o rep_set_HC.fna -m most_abundant
+
+################################
+
+# 6. Aligning the representative sequence set for ChimeraSlayer:
+
+align_seqs.py -i rep_set_HC.fna -o rep_set_alinged_HC/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
+
+# 6 (a). chimera checking with usearch61: -i = .fna from 4 (a) -r green genes fasta 
+
+identify_chimeric_seqs.py -m usearch61 -i HC.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC/
+
+################################
+# 7. assigning taxonomy
+
+# 7 (a) - i rep_set.fna (from 5b) -r greengenes_otu_97.fasta -t -r greengenes_otu_97_taxonomy.txt - c cutoff value
+
+assign_taxonomy.py -i rep_set_HC.fna -r ~/macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t ~/macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC/
+
+# 7 (b) generating OTU table
+# Using the OTU map (5a), the taxonomic assignments (7) and the list of chimeric OTUs to remove (6) to assemble a readable matrix of OTU abundance in each sample with taxonomic identifiers for each OTU.
+
+make_otu_table.py -i HC_otus.txt -t rep_set_HC_tax_assignments.txt -o otu_table_HC_nc.biom -e rep_set_HC_failures.fasta
+
+# 7 (b) remove singletons
+
+filter_otus_from_otu_table.py -i otu_table_HC_nc.biom -o otu_table_HC_nc_ns.biom -n 2
+
+# to add metadata to biom file 
+
+biom add-metadata -i otu_table_HC_nc_ns.biom -o otu_table_HC_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map.txt
+
+# 7 (c) summary of taxonomy (biom)
+
+biom summarize-table -i otu_table_HC_nc_ns_meta.biom  -o otu_table_summary_HC.txt
+
+# 7 (d) convert biom table to txt
+#-i from 7(b)
+
+biom convert -i otu_table_HC_nc_ns_meta.biom -o HC_table_tabseparated.txt -b --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
+
+# 7 (e) summarize taxa tables (relative abundance)
+
+summarize_taxa.py -i otu_table_HC_nc_ns_meta.biom -o taxonomy_summaries_HC_RA/
+
+# 7 (f) summarize taxa tables (absolute counts)
+
+summarize_taxa.py -i otu_table_HC_nc_ns_meta.biom -a -o taxonomy_summaries_HC_counts/
+
+#output is a folder with .txt files of each different taxonomic level L2 (phyla); L3 (class); L4 (order); L5 (family); L6 (genus)
+
+################################
+# make stacked bar graphs
+
+summarize_taxa_through_plots.py -o taxa_summary_by_date -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Date -s
+summarize_taxa_through_plots.py -o taxa_summary_by_time -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Date -s
+summarize_taxa_through_plots.py -o taxa_summary_by_time -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Reach -s
+summarize_taxa_through_plots.py -o taxa_summary_by_age -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Total_Biofilm_Growth -s
+summarize_taxa_through_plots.py -o taxa_summary_by_qrt_trmt -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Total_Biofilm_Growth_PostCarcass -s
+summarize_taxa_through_plots.py -o taxa_summary -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -s
+
+################################
+# calculate  diversity metrics
+
+alpha_diversity.py -i otu_table_HC_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC.txt
+
+#phylogenetic_diversity
+
+alpha_diversity.py -i otu_table_HC_nc_ns_meta.biom -m PD_whole_tree -o adiv_pd.txt -t HC_phylo.tre
