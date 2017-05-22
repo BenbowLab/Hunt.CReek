@@ -1,0 +1,2 @@
+#This code is used to split a validated master mapping file into individual mapping files for each sample.
+#Use this code between qiime validate_mapping_file_py and split_libraries_fastq.py
