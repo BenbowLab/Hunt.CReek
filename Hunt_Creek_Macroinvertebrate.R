@@ -1,1 +1,2 @@
 #Begin analyzing macroinvertebrate community data from Hunt Creek Salmon study
+Hunt_Creek_Macroinvertebrates<-read.csv("~/Documents/MSU/Research/Hunt_Creek_Salmon/Macroinvertebrates/Hunt_Creek_Macroinvertebrates.csv", sep = ",", header = T )
