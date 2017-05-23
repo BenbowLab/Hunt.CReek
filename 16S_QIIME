@@ -1,11 +1,11 @@
-# 2014 Hunt Creek Carcass (Submission 1)
+# Hunt Creek Salmon 16S 2014-2016
 
 ################################
 # 1. prep metadata
 
 #Sample List & Mapping File
 
-SampleID	BarcodeSequence	LinkerPrimerSequence	Month	Day	YYYY	Date	Reach	Subreach	Source	Total_Biofilm_Growth	Total_Biofilm_Growth_PostCarcass	Year	Description
+#SampleID	BarcodeSequence	LinkerPrimerSequence	Month	Day	YYYY	Date	Reach	Subreach	Source	Total_Biofilm_Growth	Total_Biofilm_Growth_PostCarcass	Year	Description
 HC.1	AACGCTGAATCGTACG	N	10	3	2014	10/3/14	Control	I	Biofilm	14	0	1	HCUSI3Oct2014BF
 HC.2	TGCTCGTACGTGAGTG	N	10	3	2014	10/3/14	Control	II	Biofilm	14	0	1	HCUSII3Oct2014BF
 HC.3	GCGTATACGGATATCT	N	10	3	2014	10/3/14	Control	III	Biofilm	14	0	1	HCUSIII3Oct2014BF
@@ -101,7 +101,7 @@ HC.92	TAGCAGCTATCGTACG	N	3	19	2016	3/19/16	Salmon	II	Biofilm	176	162	2	HCDSII19M
 HC.93	ACGTGCGCTAGCGAGT	N	3	19	2016	3/19/16	Salmon	I	Biofilm	176	162	2	HCDSI19Mar2016BF
 HC.94	CGAAGTATATCGTACG	N	3	19	2016	3/19/16	Control	III	Biofilm	176	162	2	HCUSIII19Mar2016BF
 HC.95	GTAACGAGCTGCGTGT	N	3	19	2016	3/19/16	Control	II	Biofilm	176	162	2	HCUSII19Mar2016BF
-HC.96	CGAAGTATTAGCGAGT	N	3	19	2016	3/19/16	Control	I	Biofilm	176	162	2	HCUSI19Mar2016BF
+HC.96	CGAAGTATTAGCGAGT	N	3	19	2016	3/19/16	Control	I	Biofilm	176	162	2	HCUSI19Mar2016BF							
 
 #Sequence Reads
 
@@ -625,7 +625,7 @@ cd ~/Desktop/Demultiplexed/
 
 cat HC_1_seqs.fna HC_2_seqs.fna HC_3_seqs.fna HC_4_seqs.fna HC_5_seqs.fna HC_6_seqs.fna HC_7_seqs.fna HC_8_seqs.fna HC_9_seqs.fna HC_10_seqs.fna HC_11_seqs.fna HC_12_seqs.fna HC_13_seqs.fna HC_14_seqs.fna HC_15_seqs.fna HC_16_seqs.fna HC_17_seqs.fna HC_18_seqs.fna HC_19_seqs.fna HC_20_seqs.fna HC_21_seqs.fna HC_22_seqs.fna HC_23_seqs.fna HC_24_seqs.fna HC_25_seqs.fna HC_25_seqs.fna HC_26_seqs.fna HC_27_seqs.fna HC_28_seqs.fna HC_29_seqs.fna HC_30_seqs.fna HC_31_seqs.fna HC_32_seqs.fna HC_33_seqs.fna HC_34_seqs.fna HC_35_seqs.fna HC_35_seqs.fna HC_36_seqs.fna HC_37_seqs.fna HC_38_seqs.fna HC_39_seqs.fna HC_40_seqs.fna HC_41_seqs.fna HC_42_seqs.fna HC_43_seqs.fna HC_44_seqs.fna HC_45_seqs.fna HC_46_seqs.fna HC_47_seqs.fna HC_48_seqs.fna HC_49_seqs.fna HC_50_seqs.fna HC_51_seqs.fna HC_52_seqs.fna HC_53_seqs.fna HC_54_seqs.fna HC_55_seqs.fna HC_56_seqs.fna HC_57_seqs.fna HC_58_seqs.fna HC_59_seqs.fna HC_60_seqs.fna HC_61_seqs.fna HC_62_seqs.fna HC_63_seqs.fna HC_64_seqs.fna HC_65_seqs.fna HC_66_seqs.fna HC_67_seqs.fna HC_68_seqs.fna HC_69_seqs.fna HC_70_seqs.fna HC_71_seqs.fna HC_72_seqs.fna HC_73_seqs.fna HC_74_seqs.fna HC_75_seqs.fna HC_76_seqs.fna HC_77_seqs.fna HC_78_seqs.fna HC_79_seqs.fna HC_80_seqs.fna HC_81_seqs.fna HC_82_seqs.fna HC_83_seqs.fna HC_84_seqs.fna HC_85_seqs.fna HC_86_seqs.fna HC_87_seqs.fna HC_88_seqs.fna HC_89_seqs.fna HC_90_seqs.fna HC_91_seqs.fna HC_92_seqs.fna HC_93_seqs.fna HC_94_seqs.fna HC_95_seqs.fna HC_96_seqs.fna > HC.fna
 
-# validate demultiplexed concatenated file to make sure it's good for downstream analysis.
+# validate demultiplexed concatenated file to make sure it's good for downstream analysis. Move mapping file to ~/Desktop/Demultiplexed
 
 validate_demultiplexed_fasta.py -m Hunt_Creek_Map.txt -i HC.fna
 
@@ -654,7 +654,7 @@ identify_chimeric_seqs.py -m usearch61 -i HC.fna -r /macqiime/anaconda/lib/pytho
 
 # 7 (a) - i rep_set.fna (from 5b) -r greengenes_otu_97.fasta -t -r greengenes_otu_97_taxonomy.txt - c cutoff value
 
-assign_taxonomy.py -i rep_set_HC.fna -r ~/macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t ~/macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC/
+assign_taxonomy.py -i rep_set_HC.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC/
 
 # 7 (b) generating OTU table
 # Using the OTU map (5a), the taxonomic assignments (7) and the list of chimeric OTUs to remove (6) to assemble a readable matrix of OTU abundance in each sample with taxonomic identifiers for each OTU.
