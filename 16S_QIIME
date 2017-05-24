@@ -724,15 +724,15 @@ assign_taxonomy.py -i rep_set_HC_R4.fna -r /macqiime/anaconda/lib/python2.7/site
 assign_taxonomy.py -i rep_set_HC_R5.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R5/
 assign_taxonomy.py -i rep_set_HC_R6.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R6/
 
-# 7 (b) generating OTU table
+#  7 (b) generating OTU table
 # Using the OTU map (5a), the taxonomic assignments (7) and the list of chimeric OTUs to remove (6) to assemble a readable matrix of OTU abundance in each sample with taxonomic identifiers for each OTU.
 
-make_otu_table.py -i HC_R1_otus.txt -t rep_set_HC_R1_tax_assignments.txt -o otu_table_HC_R1_nc.biom -e rep_set_HC_R1_failures.fasta
-make_otu_table.py -i HC_R2_otus.txt -t rep_set_HC_R2_tax_assignments.txt -o otu_table_HC_R2_nc.biom -e rep_set_HC_R2_failures.fasta
-make_otu_table.py -i HC_R3_otus.txt -t rep_set_HC_R3_tax_assignments.txt -o otu_table_HC_R3_nc.biom -e rep_set_HC_R3_failures.fasta
-make_otu_table.py -i HC_R4_otus.txt -t rep_set_HC_R4_tax_assignments.txt -o otu_table_HC_R4_nc.biom -e rep_set_HC_R4_failures.fasta
-make_otu_table.py -i HC_R5_otus.txt -t rep_set_HC_R5_tax_assignments.txt -o otu_table_HC_R5_nc.biom -e rep_set_HC_R5_failures.fasta
-make_otu_table.py -i HC_R6_otus.txt -t rep_set_HC_R6_tax_assignments.txt -o otu_table_HC_R6_nc.biom -e rep_set_HC_R6_failures.fasta
+make_otu_table.py -i HC_R1_otus.txt -t rep_set_HC_R1_tax_assignments.txt -o otu_table_HC_R1_nc.biom -e rep_set_HC_R1_failures.fasta -e HC_R1_chimeras.txt
+make_otu_table.py -i HC_R2_otus.txt -t rep_set_HC_R2_tax_assignments.txt -o otu_table_HC_R2_nc.biom -e rep_set_HC_R2_failures.fasta -e HC_R2_chimeras.txt
+make_otu_table.py -i HC_R3_otus.txt -t rep_set_HC_R3_tax_assignments.txt -o otu_table_HC_R3_nc.biom -e rep_set_HC_R3_failures.fasta -e HC_R3_chimeras.txt
+make_otu_table.py -i HC_R4_otus.txt -t rep_set_HC_R4_tax_assignments.txt -o otu_table_HC_R4_nc.biom -e rep_set_HC_R4_failures.fasta -e HC_R4_chimeras.txt
+make_otu_table.py -i HC_R5_otus.txt -t rep_set_HC_R5_tax_assignments.txt -o otu_table_HC_R5_nc.biom -e rep_set_HC_R5_failures.fasta -e HC_R5_chimeras.txt
+make_otu_table.py -i HC_R6_otus.txt -t rep_set_HC_R6_tax_assignments.txt -o otu_table_HC_R6_nc.biom -e rep_set_HC_R6_failures.fasta -e HC_R6_chimeras.txt
 
 # 7 (b) remove singletons
 
@@ -744,6 +744,8 @@ filter_otus_from_otu_table.py -i otu_table_HC_R5_nc.biom -o otu_table_HC_R5_nc_n
 filter_otus_from_otu_table.py -i otu_table_HC_R6_nc.biom -o otu_table_HC_R6_nc_ns.biom -n 2
 
 # to add metadata to biom file 
+
+biom add-metadata -i min_sparse_otu_table.biom -o table.w_smd.biom --sample-metadata-fp sam_md.txt
 
 biom add-metadata -i otu_table_HC_R1_nc_ns.biom -o otu_table_HC_R1_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R1.txt
 biom add-metadata -i otu_table_HC_R2_nc_ns.biom -o otu_table_HC_R2_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R2.txt
@@ -770,6 +772,8 @@ biom convert -i otu_table_HC_R3_nc_ns_meta.biom -o HC_R3_table_tabseparated.txt 
 biom convert -i otu_table_HC_R4_nc_ns_meta.biom -o HC_R4_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
 biom convert -i otu_table_HC_R5_nc_ns_meta.biom -o HC_R5_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
 biom convert -i otu_table_HC_R6_nc_ns_meta.biom -o HC_R6_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
+
+#delete "#" to make r compatible
 
 # 7 (e) summarize taxa tables (relative abundance)
 
