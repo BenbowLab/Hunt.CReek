@@ -1,6 +1,6 @@
 #Analyze macroinvertebrate community data from Hunt Creek Salmon study
 
-#load libraries
+#load packages
 library(vegan)
 library(reshape)
 library(ggplot2)
