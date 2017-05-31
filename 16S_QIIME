@@ -8,18 +8,18 @@
 Hunt_Creek_Map_R1.txt
 
 #SampleID	BarcodeSequence	LinkerPrimerSequence	Month	Day	YYYY	Date	Reach	Subreach	Source	Total_Biofilm_Growth	Total_Biofilm_Growth_PostCarcass	Year	Description
-HC.1	AACGCTGAATCGTACG	N	10	3	2014	10/3/14	Control	I	Biofilm	14	0	1	HCUSI3Oct2014BF
-HC.2	TGCTCGTACGTGAGTG	N	10	3	2014	10/3/14	Control	II	Biofilm	14	0	1	HCUSII3Oct2014BF
-HC.3	GCGTATACGGATATCT	N	10	3	2014	10/3/14	Control	III	Biofilm	14	0	1	HCUSIII3Oct2014BF
-HC.4	ATAGTACCAGAGTCAC	N	10	3	2014	10/3/14	Salmon	I	Biofilm	14	0	1	HCDSI3Oct2014BF
-HC.5	CGAAGTATATCGTACG	N	10	3	2014	10/3/14	Salmon	II	Biofilm	14	0	1	HCDSII3Oct2014BF
-HC.6	CGTAGCGACGTTACTA	N	10	3	2014	10/3/14	Salmon	III	Biofilm	14	0	1	HCDSIII3Oct2014BF
-HC.7	TCTCTATGGGATATCT	N	10	18	2014	10/18/14	Control	I	Biofilm	28	14	1	HCUSI18Oct2014BF
-HC.8	CGTAGCGAACTATCTG	N	10	18	2014	10/18/14	Control	II	Biofilm	28	14	1	HCUSII18Oct2014BF
-HC.9	GCGTATACGACACCGT	N	10	18	2014	10/18/14	Control	III	Biofilm	28	14	1	HCUSIII18Oct2014BF
-HC.10	CTCGACTTGGATATCT	N	10	18	2014	10/18/14	Salmon	I	Biofilm	28	14	1	HCDSI18Oct2014BF
-HC.11	GCGTATACCGTTACTA	N	10	18	2014	10/18/14	Salmon	II	Biofilm	28	14	1	HCDSII18Oct2014BF
-HC.12	GCGTATACTACGAGAC	N	10	18	2014	10/18/14	Salmon	III	Biofilm	28	14	1	HCDSIII18Oct2014BF
+HC.1	TCTCTATGGGATATCT	N	10	18	2014	10/18/14	Control	I	Biofilm	28	14	1	HCUSI18Oct2014BF
+HC.2	CGTAGCGAACTATCTG	N	10	18	2014	10/18/14	Control	II	Biofilm	28	14	1	HCUSII18Oct2014BF
+HC.3	GCGTATACGACACCGT	N	10	18	2014	10/18/14	Control	III	Biofilm	28	14	1	HCUSIII18Oct2014BF
+HC.4	AACGCTGAATCGTACG	N	10	3	2014	10/3/14	Control	I	Biofilm	14	0	1	HCUSI3Oct2014BF
+HC.5	TGCTCGTACGTGAGTG	N	10	3	2014	10/3/14	Control	II	Biofilm	14	0	1	HCUSII3Oct2014BF
+HC.6	GCGTATACGGATATCT	N	10	3	2014	10/3/14	Control	III	Biofilm	14	0	1	HCUSIII3Oct2014BF
+HC.7	CTCGACTTGGATATCT	N	10	18	2014	10/18/14	Salmon	I	Biofilm	28	14	1	HCDSI18Oct2014BF
+HC.8	GCGTATACCGTTACTA	N	10	18	2014	10/18/14	Salmon	II	Biofilm	28	14	1	HCDSII18Oct2014BF
+HC.9	GCGTATACTACGAGAC	N	10	18	2014	10/18/14	Salmon	III	Biofilm	28	14	1	HCDSIII18Oct2014BF
+HC.10	ATAGTACCAGAGTCAC	N	10	3	2014	10/3/14	Salmon	I	Biofilm	14	0	1	HCDSI3Oct2014BF
+HC.11	CGAAGTATATCGTACG	N	10	3	2014	10/3/14	Salmon	II	Biofilm	14	0	1	HCDSII3Oct2014BF
+HC.12	CGTAGCGACGTTACTA	N	10	3	2014	10/3/14	Salmon	III	Biofilm	14	0	1	HCDSIII3Oct2014BF
 
 Hunt_Creek_Map_R2.txt
 
@@ -661,146 +661,111 @@ cat HC_58_seqs.fna HC_59_seqs.fna HC_60_seqs.fna HC_61_seqs.fna HC_62_seqs.fna H
 cat HC_80_seqs.fna HC_81_seqs.fna HC_82_seqs.fna HC_83_seqs.fna HC_84_seqs.fna HC_85_seqs.fna HC_86_seqs.fna > HC_R5.fna
 cat HC_87_seqs.fna HC_88_seqs.fna HC_89_seqs.fna HC_90_seqs.fna HC_91_seqs.fna HC_92_seqs.fna HC_93_seqs.fna HC_94_seqs.fna HC_95_seqs.fna HC_96_seqs.fna > HC_R6.fna
 
+cat HC_R1.fna HC_R2.fna HC_R3.fna HC_R4.fna HC_R5.fna HC_R6.fna > HC.fna
+
 # validate demultiplexed concatenated file to make sure it's good for downstream analysis. Move mapping file to ~/Desktop/Demultiplexed
 
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R1.txt -i HC_R1.fna
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R2.txt -i HC_R2.fna
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R3.txt -i HC_R3.fna
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R4.txt -i HC_R4.fna
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R5.txt -i HC_R5.fna
-validate_demultiplexed_fasta.py -m Hunt_Creek_Map_R6.txt -i HC_R6.fna
-
+validate_demultiplexed_fasta.py -m Hunt_Creek_Map.txt -i HC.fna
 
 # 5. determining taxonomy by hand (according to Schlaeppi et al.)
 
 # 5(a). picking OTUs using UCLUST
 
-pick_otus.py -i HC_R1.fna -o HC_uclust_pick_R1 
-pick_otus.py -i HC_R2.fna -o HC_uclust_pick_R2
-pick_otus.py -i HC_R3.fna -o HC_uclust_pick_R3
-pick_otus.py -i HC_R4.fna -o HC_uclust_pick_R4
-pick_otus.py -i HC_R5.fna -o HC_uclust_pick_R5
-pick_otus.py -i HC_R6.fna -o HC_uclust_pick_R6
+pick_otus.py -i HC.fna -o HC_uclust_pick_R6
+
 
 # 5(b). picking a set with OTU representative sequences: py. -i = file from 5(a) - f = file from 4(a) -m = first or most_abundant
 
-pick_rep_set.py -i HC_R1_otus.txt -f HC_R1.fna -o rep_set_HC_R1.fna -m most_abundant
-pick_rep_set.py -i HC_R2_otus.txt -f HC_R2.fna -o rep_set_HC_R2.fna -m most_abundant
-pick_rep_set.py -i HC_R3_otus.txt -f HC_R3.fna -o rep_set_HC_R3.fna -m most_abundant
-pick_rep_set.py -i HC_R4_otus.txt -f HC_R4.fna -o rep_set_HC_R4.fna -m most_abundant
-pick_rep_set.py -i HC_R5_otus.txt -f HC_R5.fna -o rep_set_HC_R5.fna -m most_abundant
-pick_rep_set.py -i HC_R6_otus.txt -f HC_R6.fna -o rep_set_HC_R6.fna -m most_abundant
+pick_rep_set.py -i HC_otus.txt -f HC.fna -o rep_set_HC.fna -m most_abundant
 
 ################################
 
 # 6. Aligning the representative sequence set for ChimeraSlayer:
 
-align_seqs.py -i rep_set_HC_R1.fna -o rep_set_alinged_HC_R1/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-align_seqs.py -i rep_set_HC_R2.fna -o rep_set_alinged_HC_R2/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-align_seqs.py -i rep_set_HC_R3.fna -o rep_set_alinged_HC_R3/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-align_seqs.py -i rep_set_HC_R4.fna -o rep_set_alinged_HC_R4/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-align_seqs.py -i rep_set_HC_R5.fna -o rep_set_alinged_HC_R5/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-align_seqs.py -i rep_set_HC_R6.fna -o rep_set_alinged_HC_R6/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
-
+align_seqs.py -i rep_set_HC.fna -o rep_set_alinged_HC/ -t /macqiime/greengenes/core_set_aligned.fasta.imputed
 
 # 6 (a). chimera checking with usearch61: -i = .fna from 4 (a) -r green genes fasta 
 
-identify_chimeric_seqs.py -m usearch61 -i HC_R1.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R1/
-identify_chimeric_seqs.py -m usearch61 -i HC_R2.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R2/
-identify_chimeric_seqs.py -m usearch61 -i HC_R3.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R3/
-identify_chimeric_seqs.py -m usearch61 -i HC_R4.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R4/
-identify_chimeric_seqs.py -m usearch61 -i HC_R5.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R5/
-identify_chimeric_seqs.py -m usearch61 -i HC_R6.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC_R6/
+identify_chimeric_seqs.py -m usearch61 -i HC.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -o usearch61_chimera_checking_HC/
 
 ################################
 # 7. assigning taxonomy
 
 # 7 (a) - i rep_set.fna (from 5b) -r greengenes_otu_97.fasta -t -r greengenes_otu_97_taxonomy.txt - c cutoff value
 
-assign_taxonomy.py -i rep_set_HC_R1.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R1/
-assign_taxonomy.py -i rep_set_HC_R2.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R2/
-assign_taxonomy.py -i rep_set_HC_R3.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R3/
-assign_taxonomy.py -i rep_set_HC_R4.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R4/
-assign_taxonomy.py -i rep_set_HC_R5.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R5/
-assign_taxonomy.py -i rep_set_HC_R6.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_R6/
+assign_taxonomy.py -i rep_set_HC.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC/
 
 #  7 (b) generating OTU table
 # Using the OTU map (5a), the taxonomic assignments (7) and the list of chimeric OTUs to remove (6) to assemble a readable matrix of OTU abundance in each sample with taxonomic identifiers for each OTU.
 
-make_otu_table.py -i HC_R1_otus.txt -t rep_set_HC_R1_tax_assignments.txt -o otu_table_HC_R1_nc.biom -e rep_set_HC_R1_failures.fasta -e HC_R1_chimeras.txt
-make_otu_table.py -i HC_R2_otus.txt -t rep_set_HC_R2_tax_assignments.txt -o otu_table_HC_R2_nc.biom -e rep_set_HC_R2_failures.fasta -e HC_R2_chimeras.txt
-make_otu_table.py -i HC_R3_otus.txt -t rep_set_HC_R3_tax_assignments.txt -o otu_table_HC_R3_nc.biom -e rep_set_HC_R3_failures.fasta -e HC_R3_chimeras.txt
-make_otu_table.py -i HC_R4_otus.txt -t rep_set_HC_R4_tax_assignments.txt -o otu_table_HC_R4_nc.biom -e rep_set_HC_R4_failures.fasta -e HC_R4_chimeras.txt
-make_otu_table.py -i HC_R5_otus.txt -t rep_set_HC_R5_tax_assignments.txt -o otu_table_HC_R5_nc.biom -e rep_set_HC_R5_failures.fasta -e HC_R5_chimeras.txt
-make_otu_table.py -i HC_R6_otus.txt -t rep_set_HC_R6_tax_assignments.txt -o otu_table_HC_R6_nc.biom -e rep_set_HC_R6_failures.fasta -e HC_R6_chimeras.txt
+make_otu_table.py -i HC_otus.txt -t rep_set_HC_tax_assignments.txt -o otu_table_HC_nc.biom -e rep_set_HC_failures.fasta -e HC_chimeras.txt
 
 # 7 (b) remove singletons
 
-filter_otus_from_otu_table.py -i otu_table_HC_R1_nc.biom -o otu_table_HC_R1_nc_ns.biom -n 2
-filter_otus_from_otu_table.py -i otu_table_HC_R2_nc.biom -o otu_table_HC_R2_nc_ns.biom -n 2
-filter_otus_from_otu_table.py -i otu_table_HC_R3_nc.biom -o otu_table_HC_R3_nc_ns.biom -n 2
-filter_otus_from_otu_table.py -i otu_table_HC_R4_nc.biom -o otu_table_HC_R4_nc_ns.biom -n 2
-filter_otus_from_otu_table.py -i otu_table_HC_R5_nc.biom -o otu_table_HC_R5_nc_ns.biom -n 2
-filter_otus_from_otu_table.py -i otu_table_HC_R6_nc.biom -o otu_table_HC_R6_nc_ns.biom -n 2
+filter_otus_from_otu_table.py -i otu_table_HC_nc.biom -o otu_table_HC_nc_ns.biom -n 2
 
 # to add metadata to biom file 
 
 biom add-metadata -i min_sparse_otu_table.biom -o table.w_smd.biom --sample-metadata-fp sam_md.txt
 
-biom add-metadata -i otu_table_HC_R1_nc_ns.biom -o otu_table_HC_R1_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R1.txt
-biom add-metadata -i otu_table_HC_R2_nc_ns.biom -o otu_table_HC_R2_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R2.txt
-biom add-metadata -i otu_table_HC_R3_nc_ns.biom -o otu_table_HC_R3_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R3.txt
-biom add-metadata -i otu_table_HC_R4_nc_ns.biom -o otu_table_HC_R4_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R4.txt
-biom add-metadata -i otu_table_HC_R5_nc_ns.biom -o otu_table_HC_R5_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R5.txt
-biom add-metadata -i otu_table_HC_R6_nc_ns.biom -o otu_table_HC_R6_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map_R6.txt
+biom add-metadata -i otu_table_HC_nc_ns.biom -o otu_table_HC_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_Map.txt
 
 # 7 (c) summary of taxonomy (biom)
 
-biom summarize-table -i otu_table_HC_R1_nc_ns_meta.biom  -o otu_table_summary_HC_R1.txt
-biom summarize-table -i otu_table_HC_R2_nc_ns_meta.biom  -o otu_table_summary_HC_R2.txt
-biom summarize-table -i otu_table_HC_R3_nc_ns_meta.biom  -o otu_table_summary_HC_R3.txt
-biom summarize-table -i otu_table_HC_R4_nc_ns_meta.biom  -o otu_table_summary_HC_R4.txt
-biom summarize-table -i otu_table_HC_R5_nc_ns_meta.biom  -o otu_table_summary_HC_R5.txt
-biom summarize-table -i otu_table_HC_R6_nc_ns_meta.biom  -o otu_table_summary_HC_R6.txt
+biom summarize-table -i otu_table_HC_nc_ns_meta.biom  -o otu_table_summary_HC.txt
 
 # 7 (d) convert biom table to txt
 #-i from 7(b)
 
-biom convert -i otu_table_HC_R1_nc_ns_meta.biom -o HC_R1_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
-biom convert -i otu_table_HC_R2_nc_ns_meta.biom -o HC_R2_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
-biom convert -i otu_table_HC_R3_nc_ns_meta.biom -o HC_R3_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
-biom convert -i otu_table_HC_R4_nc_ns_meta.biom -o HC_R4_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
-biom convert -i otu_table_HC_R5_nc_ns_meta.biom -o HC_R5_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
-biom convert -i otu_table_HC_R6_nc_ns_meta.biom -o HC_R6_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
+biom convert -i otu_table_HC_nc_ns_meta.biom -o HC_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
 
 #delete "#" to make r compatible
 
 # 7 (e) summarize taxa tables (relative abundance)
 
-summarize_taxa.py -i otu_table_HC_R1_nc_ns_meta.biom -o taxonomy_summaries_HC_R1_RA/
-summarize_taxa.py -i otu_table_HC_R2_nc_ns_meta.biom -o taxonomy_summaries_HC_R2_RA/
-summarize_taxa.py -i otu_table_HC_R3_nc_ns_meta.biom -o taxonomy_summaries_HC_R3_RA/
-summarize_taxa.py -i otu_table_HC_R4_nc_ns_meta.biom -o taxonomy_summaries_HC_R4_RA/
-summarize_taxa.py -i otu_table_HC_R5_nc_ns_meta.biom -o taxonomy_summaries_HC_R5_RA/
-summarize_taxa.py -i otu_table_HC_R6_nc_ns_meta.biom -o taxonomy_summaries_HC_R6_RA/
+summarize_taxa.py -i otu_table_HC_nc_ns_meta.biom -o taxonomy_summaries_HC_RA/
 
 # 7 (f) summarize taxa tables (absolute counts)
 
-summarize_taxa.py -i otu_table_HC_R1_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R1_counts/
-summarize_taxa.py -i otu_table_HC_R2_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R2_counts/
-summarize_taxa.py -i otu_table_HC_R3_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R3_counts/
-summarize_taxa.py -i otu_table_HC_R4_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R4_counts/
-summarize_taxa.py -i otu_table_HC_R5_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R5_counts/
-summarize_taxa.py -i otu_table_HC_R6_nc_ns_meta.biom -a -o taxonomy_summaries_HC_R6_counts/
+summarize_taxa.py -i otu_table_HC_nc_ns_meta.biom -a -o taxonomy_summaries_HC_counts/
 
 #output is a folder with .txt files of each different taxonomic level L2 (phyla); L3 (class); L4 (order); L5 (family); L6 (genus)
 
 ################################
-# calculate  diversity metrics
+# calculate  alpha diversity
 
-alpha_diversity.py -i otu_table_HC_R1_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R1.txt
-alpha_diversity.py -i otu_table_HC_R2_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R2.txt
-alpha_diversity.py -i otu_table_HC_R3_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R3.txt
-alpha_diversity.py -i otu_table_HC_R4_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R4.txt
-alpha_diversity.py -i otu_table_HC_R5_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R5.txt
-alpha_diversity.py -i otu_table_HC_R6_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_R6.txt
+alpha_diversity.py -i otu_table_HC_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC.txt
+
+###################
+#Make phylogenetic tree
+
+make_phylogeny.py -i rep_set_HC_aligned.fasta -o HC_phylo.tre
+
+iTol.py -i otu_table_HC_nc_ns.biom -m Hunt_Creek_Map.txt -t HC_phylo.tre -o HC_itol_table_r -c "Reach,Year,Source,Consensus.Lineage" -a raw
+iTol.py -i otu_table_HC_nc_ns.biom -m Hunt_Creek_Map.txt -t HC_phylo.tre -o HC_itol_table_r -c "Reach" -a NMRA
+iTol.py -i otu_table_HC_nc_ns.biom -m Hunt_Creek_Map.txt -t HC_phylo.tre -o HC_itol_table_r_sal.txt -c "Salmon" -a NMRA
+iTol.py -i otu_table_HC_nc_ns.biom -m Hunt_Creek_Map.txt -t HC_phylo.tre -o HC_itol_table_r_con.txt -c "Control" -a NMRA
+
+#alpha and beta diversity based on phylogeny
+
+alpha_diversity.py -i otu_table_HC_nc_ns_meta.biom -m PD_whole_tree -o adiv_pd.txt -t HC_phylo.tre
+
+beta_diversity.py -i otu_table_HC_nc_ns_meta.biom -m weighted_unifrac -o HC_beta_div/ -t HC_phylo.tre
+
+#Makek PcOA plots in emperor
+
+principal_coordinates.py -i weighted_unifrac_otu_table_HC.txt -o HC_beta_div_coords.txt
+
+make_emperor.py -i HC_beta_div_coords.txt -m Hunt_Creek_Map.txt -b "Date,Reach,Source,Total_Biofilm_Growth,Total_Biofilm_Growth_PostCarcass,Year" -o HC_PCoA
+
+##################
+#Make stacked bargraphs
+
+summarize_taxa_through_plots.py -o taxa_summary_by_treatment -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Reach -s
+summarize_taxa_through_plots.py -o taxa_summary_by_year -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Year -s
+summarize_taxa_through_plots.py -o taxa_summary_by_source -i otu_table_HC_nc_ns_meta.biom -m Hunt_Creek_Map.txt -c Source -s
+
+########################
+#Make network files for cytoscape
+
+make_otu_network.py -i otu_table_HC_nc.biom -m Hunt_Creek_Map.txt -o otu_HC_network
