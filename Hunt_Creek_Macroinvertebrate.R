@@ -1,5 +1,9 @@
 #Analyze macroinvertebrate community data from Hunt Creek Salmon study
 
+###################################################
+#Load packages and functions and get color vectors
+##################################################
+
 #load packages
 library(vegan)
 library(reshape)
@@ -53,6 +57,10 @@ eight_col_vec<-c("#f7fcfd", "#e5f5f9", "#ccece6", "#99d8c9", "#66c2a4", "#41ae76
 eleven_col_vec <- c("gray0", "gray9", "gray18", "gray27", "gray36", "gray45", "gray54", "gray63", "gray72", "gray81", "gray90")
 fifteen_col_vec<-c("#fee8c8", "#fff7fb", "#fdd49e", "#ece7f2", "#d0d1e6", "#fdbb84", "#a6bddb", "#fc8d59", "#74a9cf", "#ef6548" ,"#3690c0", "#d7301f", "#0570b0", "#990000", "#034e7b")
 
+##############################################
+#Upload data and make "r friendly"
+###############################################
+
 #Upload .csv file
 Hunt_Creek_Macroinvertebrates<-read.csv("~/Documents/MSU/Research/Hunt_Creek_Salmon/Macroinvertebrates/Hunt_Creek_Macroinvertebrates.csv", sep = ",", header = T )
 #Confirm header names
@@ -71,16 +79,58 @@ levels(HC_Inverts_Subset$SampleID)
 levels(HC_Inverts_Subset$Taxonomy)
 
 #Convert to community table for community analysis
-HC_M_Matrix <- cast(HC_Inverts_Subset, SampleID + Date + Reach + Subreach + Type + Days_Since_Carcass_Introduction ~ Taxonomy, value = "Value")
+HC_M_Matrix <- cast(HC_Inverts_Subset, SampleID + Date + Reach + Subreach + Type + Days_Since_Carcass_Introduction + Year ~ Taxonomy, value = "Value")
 #create file with only community data
 str(HC_M_Matrix)
-HC_Inverts_Community <- as.matrix(HC_M_Matrix[,7:ncol(HC_M_Matrix)])
+HC_Inverts_Community <- as.matrix(HC_M_Matrix[,8:ncol(HC_M_Matrix)])
 #Replace "na" with 0
 HC_Inverts_Community[is.na(HC_Inverts_Community)]<-0
 str(HC_Inverts_Community)
 #Separate environmental data
-HC_Inverts_Env<-HC_M_Matrix[,1:6]
+HC_Inverts_Env<-HC_M_Matrix[,1:7]
 str(HC_Inverts_Env)
+HC_Inverts_Env$Days_Since_Carcass_Introduction<-as.factor(HC_Inverts_Env$Days_Since_Carcass_Introduction)
+##########################################
+#PERMANOVA for macroinvertebrate data
+###########################################
+
+#Permanova for Year, treatment, and days since carcass introduction
+adonis(HC_Inverts_Community ~ Reach*Days_Since_Carcass_Introduction*Year, data=HC_Inverts_Env, method="bray", permutations=999)
+
+
+###########################################
+#Separate and analyze for year 1 and 2 separately
+################################################
+
+#Create year 1 macro data table
+HC_M_Matrix_Y1<-subset(HC_M_Matrix, Year==1)
+HC_Inverts_Community_Y1 <- as.matrix(HC_M_Matrix_Y1[,8:ncol(HC_M_Matrix_Y1)])
+#Replace "na" with 0
+HC_Inverts_Community_Y1[is.na(HC_Inverts_Community_Y1)]<-0
+str(HC_Inverts_Community_Y1)
+#Separate environmental data
+HC_Inverts_Env_Y1<-HC_M_Matrix_Y1[,1:7]
+str(HC_Inverts_Env_Y1)
+HC_Inverts_Env_Y1$Days_Since_Carcass_Introduction<-as.factor(HC_Inverts_Env_Y1$Days_Since_Carcass_Introduction)
+
+#Create Year 2 macro data table
+HC_M_Matrix_Y2<-subset(HC_M_Matrix, Year==2)
+HC_Inverts_Community_Y2 <- as.matrix(HC_M_Matrix_Y2[,8:ncol(HC_M_Matrix_Y2)])
+#Replace "na" with 0
+HC_Inverts_Community_Y2[is.na(HC_Inverts_Community_Y2)]<-0
+str(HC_Inverts_Community_Y2)
+#Separate environmental data
+HC_Inverts_Env_Y2<-HC_M_Matrix_Y2[,1:7]
+str(HC_Inverts_Env_Y2)
+HC_Inverts_Env_Y2$Days_Since_Carcass_Introduction<-as.factor(HC_Inverts_Env_Y2$Days_Since_Carcass_Introduction)
+
+#PERMANOVAs for each year
+adonis(HC_Inverts_Community_Y1 ~ Reach*Days_Since_Carcass_Introduction, data=HC_Inverts_Env_Y1, method="bray", permutations=999)
+adonis(HC_Inverts_Community_Y2 ~ Reach*Days_Since_Carcass_Introduction, data=HC_Inverts_Env_Y2, method="bray", permutations=999)
+
+########################################
+#######################################
+######################################
 
 #Set up factor for Salmon vs Control called stream_site
 levels(HC_M_Matrix$Reach)
@@ -163,9 +213,6 @@ with(HC_Macroinvertebrate_NMDS, points(HC_Macroinvertebrate_NMDS, display="sites
 with(HC_Macroinvertebrate_NMDS, legend("topleft", legend=levels(stream_site), bty="n", col=two_col_vec_ob, pch=19, pt.bg=two_col_vec_ob))
 with(HC_Macroinvertebrate_NMDS, ordiellipse(HC_Macroinvertebrate_NMDS, Year, kind="se", conf=0.95, lwd=2, col="black", show.groups = "1"))
 with(HC_Macroinvertebrate_NMDS, ordiellipse(HC_Macroinvertebrate_NMDS, Year, kind="se", conf=0.95, lwd=2, col="bisque3", show.groups = "2"))
-
-#Permanova for stream_site Salmon vs. Control
-adonis(HC_Inverts_Community ~ stream_site*Days_Carcass*Year, data=HC_Inverts_Env, permutations=999)
 
 #############
 #Now on to populations rather than communities
