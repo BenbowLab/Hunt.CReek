@@ -752,6 +752,9 @@ alpha_diversity.py -i otu_table_HC_nc_ns_meta.biom -m PD_whole_tree -o adiv_pd.t
 
 beta_diversity.py -i otu_table_HC_nc_ns_meta.biom -m weighted_unifrac -o HC_beta_div/ -t HC_phylo.tre
 
+#Perform permanova test
+compare_categories.py --method adonis -i weighted_unifrac_otu_table_HC.txt -m Hunt_Creek_Map.txt -c "Reach,Year,Source,Total_Biofilm_Growth_PostCarcass" -o adonis_out -n 999
+
 #Makek PcOA plots in emperor
 
 principal_coordinates.py -i weighted_unifrac_otu_table_HC.txt -o HC_beta_div_coords.txt
@@ -769,3 +772,15 @@ summarize_taxa_through_plots.py -o taxa_summary_by_source -i otu_table_HC_nc_ns_
 #Make network files for cytoscape
 
 make_otu_network.py -i otu_table_HC_nc.biom -m Hunt_Creek_Map.txt -o otu_HC_network
+
+###################
+SourceTracker
+
+biom summarize-table -i otu_table_HC_nc_ns_meta.biom
+
+#the next step is to filter out otu's that are found in less than 1% of samples. Because there is less than 100 samples at this point, this step isn't necessary
+#Add SourceSink and Env columns to mapping file
+#Delete consensus.lineage column and save as HC_OTU_Table.txt
+R --slave --vanilla --args -i HC_OTU_Table.txt -m Hunt_Creek_Map.txt -o sourcetracker_out < $SOURCETRACKER_PATH/sourcetracker_for_qiime.r
+
+
