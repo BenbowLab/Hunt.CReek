@@ -9,7 +9,6 @@ library(plyr)
 library(dplyr)
 
 #Functions
-#Functions
 ## Summarizes data.
 ## Gives count, mean, standard deviation, standard error of the mean, and confidence 
 ## interval (default 95%).
@@ -50,6 +49,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 #color vectors
 two_col_vec <- c("black", "bisque3")
 three_col_vec<- c("#a6cee3", "#1f78b4", "#b2df8a")
+four_col_vec<-c("#7fc97f", "#beaed4", "#fdc086", "#ffff99")
 five_col_vec<- c("#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0")
 six_col_vec<- c("#e41a1c", "#377eb8", "green", "#984ea3", "#ff7f00", "#ffff33")
 six_col_vec_cont<-c("#fee5d9", "#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15")
@@ -69,7 +69,7 @@ row.names(Hunt_Creek_16S)<-Hunt_Creek_16S[,1]
 
 #Delete taxonomy and denovo columns, now that denovo is row name
 Hunt_Creek_16S$SampleID<-NULL
-
+Hunt_Creek_16S$Consensus.Lineage<-NULL
 #transpose
 HC_16S_OTU_t<-t(Hunt_Creek_16S)
 HC_16S_OTU_t<-data.frame(HC_16S_OTU_t)
@@ -90,10 +90,10 @@ Hunt_Creek_16S_uni<-Hunt_Creek_16S_uni[1:94,1:94]
 Hunt_Creek_16S_uni_map <-merge(Hunt_Creek_16S_map, Hunt_Creek_16S_uni, by=0)
 
 #create overal community data matrix for community analysis
-HC_16S_com<-data.frame(HC_16S_OTU_map[,15:ncol(HC_16S_OTU_map)])
+HC_16S_com<-data.frame(HC_16S_OTU_map[,18:ncol(HC_16S_OTU_map)])
 
 #Create overall environmental data matrix for community analysis
-HC_16S_uni_env<-(Hunt_Creek_16S_uni_map[,1:14])
+HC_16S_uni_env<-(Hunt_Creek_16S_uni_map[,1:17])
 row.names(HC_16S_uni_env)<-HC_16S_uni_env[,1]
 HC_16S_uni_env<-HC_16S_uni_env[,-c(1)]
 #merge insects into one source type
@@ -455,8 +455,8 @@ sum(HC_16S_OTU_map_BF_DS$denovo177870)
 #Make nmds plot for carcass and biofilms for year 1
 HC_16S_uni_map_Y1_CBF<-subset(H_C_16S_uni_map_Y1, Reach=="Salmon")
 HC_16S_uni_map_Y1_CBF<-subset(HC_16S_uni_map_Y1_CBF, Date=="10/3/14" | Date=="10/4/14" | Date=="10/18/14")
-HC_16S_uni_map_Y1_CBF_com<-HC_16S_uni_map_Y1_CBF[,c(14,15,16,42,51,56,57,58,59,60,63,64,84,85,88)]
-HC_16S_uni_map_Y1_CBF_env<-HC_16S_uni_map_Y1_CBF[,1:13]
+HC_16S_uni_map_Y1_CBF_com<-HC_16S_uni_map_Y1_CBF[,c(17,18,19,45,54,59,60,61,62,63,66,67,87,88,91)]
+HC_16S_uni_map_Y1_CBF_env<-HC_16S_uni_map_Y1_CBF[,1:16]
 Y1_CBF<-as.factor(HC_16S_uni_map_Y1_CBF_env$Total_Biofilm_Growth)
 levels(Y1_CBF)
 HC_CBF_NMDS_Y1<-metaMDS(as.dist(HC_16S_uni_map_Y1_CBF_com))
@@ -516,53 +516,44 @@ P_totals<-P_totals[-c(1:96),]
 sort(P_totals,decreasing=TRUE)[1:6]
 rowSums(P_totals)
 
-#Split into year 1 and year 2 data
-HC_16S_P_map_Y1<-subset(HC_16S_P_map, Year== "1")
-HC_16S_P_map_Y2<-subset(HC_16S_P_map, Year== "2")
-
 #limit phyla data to biofilms for each year
-HC_16S_P_map_Y1_BF<-subset(HC_16S_P_map_Y1, Source == "Biofilm")
-HC_16S_P_map_Y2_BF<-subset(HC_16S_P_map_Y2, Source == "Biofilm")
+HC_16S_P_map_BF<-subset(HC_16S_P_map, Source == "Biofilm")
 
 #Make line plot for cyanobacteria for salmon vs control in year 1
-HC_16S_P_map_Y1_BF$k__Bacteria.p__Cyanobacteria<-as.numeric(HC_16S_P_map_Y1_BF$"k__Bacteria.p__Cyanobacteria")
-HC_16S_P_map_Y1_BF$Reach<-as.factor(HC_16S_P_map_Y1_BF$Reach)
-Cyo_p_Y1<-data.frame(HC_16S_P_map_Y1_BF[,c(8,11,35)])
-cpy <- summarySE(Cyo_p_Y1, measurevar="k__Bacteria.p__Cyanobacteria", groupvars=c("Total_Biofilm_Growth","Reach"))
-ggplot(cpy, aes(x=Total_Biofilm_Growth, y=k__Bacteria.p__Cyanobacteria, colour=Reach)) + 
+HC_16S_P_map_BF$k__Bacteria.p__Cyanobacteria<-as.numeric(HC_16S_P_map_BF$"k__Bacteria.p__Cyanobacteria")
+HC_16S_P_map_BF$Treatment<-as.factor(HC_16S_P_map_BF$Reach)
+Cyo_p<-data.frame(HC_16S_P_map_BF[,c(13,38,92)])
+cpy <- summarySE(Cyo_p, measurevar="k__Bacteria.p__Cyanobacteria", groupvars=c("Days_Since_Study_Start","Treatment"))
+ggplot(cpy, aes(x=Days_Since_Study_Start, y=k__Bacteria.p__Cyanobacteria, colour=Treatment)) + 
   geom_errorbar(aes(ymin=k__Bacteria.p__Cyanobacteria-se, ymax=k__Bacteria.p__Cyanobacteria+se), width=.1) +
-  geom_line() +
-  geom_point()
+  geom_line(size=1.5) +
+  geom_point(size=1.5) +
+  xlab("Days of biofilm growth") +
+  ylab("Cyanobacteria relative abundance +/- SE") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
+  scale_color_manual(values=c("skyblue3", "tomato3")) +
+  scale_x_continuous(breaks=seq(0,700,100))
 
-#Make line plot for cyanobacteria for salmon vs control in year 2
-HC_16S_P_map_Y2_BF$k__Bacteria.p__Cyanobacteria<-as.numeric(HC_16S_P_map_Y2_BF$"k__Bacteria.p__Cyanobacteria")
-HC_16S_P_map_Y2_BF$Reach<-as.factor(HC_16S_P_map_Y2_BF$Reach)
-Cyo_p_Y2<-data.frame(HC_16S_P_map_Y2_BF[,c(8,11,35)])
-cpy2 <- summarySE(Cyo_p_Y2, measurevar="k__Bacteria.p__Cyanobacteria", groupvars=c("Total_Biofilm_Growth","Reach"))
-ggplot(cpy2, aes(x=Total_Biofilm_Growth, y=k__Bacteria.p__Cyanobacteria, colour=Reach)) + 
-  geom_errorbar(aes(ymin=k__Bacteria.p__Cyanobacteria-se, ymax=k__Bacteria.p__Cyanobacteria+se), width=.1) +
-  geom_line() +
-  geom_point()
-
-#Make line plot for firmicutes for salmon vs control in year 1
-HC_16S_P_map_Y1_BF$k__Bacteria.p__Firmicutes<-as.numeric(HC_16S_P_map_Y1_BF$"k__Bacteria.p__Firmicutes")
-HC_16S_P_map_Y1_BF$Reach<-as.factor(HC_16S_P_map_Y1_BF$Reach)
-Fir_p_Y1<-data.frame(HC_16S_P_map_Y1_BF[,c(8,11,41)])
-fpy1 <- summarySE(Fir_p_Y1, measurevar="k__Bacteria.p__Firmicutes", groupvars=c("Total_Biofilm_Growth","Reach"))
-ggplot(fpy1, aes(x=Total_Biofilm_Growth, y=k__Bacteria.p__Firmicutes, colour=Reach)) + 
+#Make line plot for firmicutes for salmon vs control
+HC_16S_P_map_BF$k__Bacteria.p__Firmicutes<-as.numeric(HC_16S_P_map_BF$"k__Bacteria.p__Firmicutes")
+HC_16S_P_map_BF$Treatment<-as.factor(HC_16S_P_map_BF$Reach)
+firm_p<-data.frame(HC_16S_P_map_BF[,c(13,44,92)])
+fir <- summarySE(firm_p, measurevar="k__Bacteria.p__Firmicutes", groupvars=c("Days_Since_Study_Start","Treatment"))
+ggplot(fir, aes(x=Days_Since_Study_Start, y=k__Bacteria.p__Firmicutes, colour=Treatment)) + 
   geom_errorbar(aes(ymin=k__Bacteria.p__Firmicutes-se, ymax=k__Bacteria.p__Firmicutes+se), width=.1) +
-  geom_line() +
-  geom_point()
-
-#Make line plot for firmicutes for salmon vs control in year 2
-HC_16S_P_map_Y2_BF$k__Bacteria.p__Firmicutes<-as.numeric(HC_16S_P_map_Y2_BF$"k__Bacteria.p__Firmicutes")
-HC_16S_P_map_Y2_BF$Reach<-as.factor(HC_16S_P_map_Y2_BF$Reach)
-Fir_p_Y2<-data.frame(HC_16S_P_map_Y2_BF[,c(8,11,41)])
-fpy2 <- summarySE(Fir_p_Y2, measurevar="k__Bacteria.p__Firmicutes", groupvars=c("Total_Biofilm_Growth","Reach"))
-ggplot(fpy2, aes(x=Total_Biofilm_Growth, y=k__Bacteria.p__Firmicutes, colour=Reach)) + 
-  geom_errorbar(aes(ymin=k__Bacteria.p__Firmicutes-se, ymax=k__Bacteria.p__Firmicutes+se), width=.1) +
-  geom_line() +
-  geom_point()
+  geom_line(size=1.5) +
+  geom_point(size=1.5) +
+  xlab("Days of biofilm growth") +
+  ylab("Firmicutes relative abundance +/- SE") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
+  scale_color_manual(values=c("skyblue3", "tomato3")) +
+  scale_x_continuous(breaks=seq(0,700,100))
 
 #melt to long format
 names(HC_16S_P_map[,1:14])
@@ -580,5 +571,70 @@ HC_16S_P_map_m<-melt(HC_16S_P_map,
 #Delete zeros in melted file
 HC_16S_P_map_m<-subset(HC_16S_P_map_m, value > 0)
 
+###################
+#Sourcetracker plots
+###################
+
+#Upload sourcetracker table obtained using QIIME
+HC_16S_SourceTracker<-read.table("~/Desktop/sourcetracker_out/sink_predictions.txt", sep="\t", header = T)
+row.names(HC_16S_SourceTracker)<-HC_16S_SourceTracker[,1]
+HC_16S_SourceTracker$SampleID<-NULL
+#Merge metadata
+HC_16S_SourceTracker_map <-merge(Hunt_Creek_16S_map, HC_16S_SourceTracker, by=0)
 
 
+#Pie graphs for insect control
+
+#subset insect control
+HC_16S_SourceTracker_map_ic<-subset(HC_16S_SourceTracker_map, Env=="InsectControl")
+HC_16S_SourceTracker_map_ic<-HC_16S_SourceTracker_map_ic[,18:ncol(HC_16S_SourceTracker_map_ic)]
+Sums_ic<-colSums(HC_16S_SourceTracker_map_ic)
+lables_ic<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_ic, labels=lables_ic, main="All Control Insects", col=four_col_vec)
+#subset by insect taxa in control
+#Rhyacophila
+HC_16S_SourceTracker_map_icr<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Rhyacophila")
+HC_16S_SourceTracker_map_icr<-HC_16S_SourceTracker_map_icr[,18:ncol(HC_16S_SourceTracker_map_icr)]
+Sums_icr<-colSums(HC_16S_SourceTracker_map_icr)
+lables_icr<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_icr, labels=lables_icr, main="Control Rhyacophila", col=four_col_vec)
+#Stegopterna
+HC_16S_SourceTracker_map_ics<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Stegopterna")
+HC_16S_SourceTracker_map_ics<-HC_16S_SourceTracker_map_ics[,18:ncol(HC_16S_SourceTracker_map_ics)]
+Sums_ics<-colSums(HC_16S_SourceTracker_map_ics)
+lables_ics<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_ics, labels=lables_ics, main="Control Stegopterna", col=four_col_vec)
+#Baetis
+HC_16S_SourceTracker_map_icb<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Baetis")
+HC_16S_SourceTracker_map_icb<-HC_16S_SourceTracker_map_icb[,18:ncol(HC_16S_SourceTracker_map_icb)]
+Sums_icb<-colSums(HC_16S_SourceTracker_map_icb)
+lables_icb<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_icb, labels=lables_icb, main="Control Baetis", col=four_col_vec)
+
+#Pie graphs for insect treatment
+
+#subset insect treatment
+HC_16S_SourceTracker_map_it<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon")
+HC_16S_SourceTracker_map_it<-HC_16S_SourceTracker_map_it[,18:ncol(HC_16S_SourceTracker_map_it)]
+Sums_it<-colSums(HC_16S_SourceTracker_map_it)
+lables_it<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_it, labels=lables_it, main="All Treatment Insects", col=four_col_vec)
+#subset by insect taxa in control
+#Rhyacophila
+HC_16S_SourceTracker_map_itr<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Rhyacophila")
+HC_16S_SourceTracker_map_itr<-HC_16S_SourceTracker_map_itr[,18:ncol(HC_16S_SourceTracker_map_itr)]
+Sums_itr<-colSums(HC_16S_SourceTracker_map_itr)
+lables_itr<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_itr, labels=lables_itr, main="Treatment Rhyacophila", col=four_col_vec)
+#Stegopterna
+HC_16S_SourceTracker_map_its<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Stegopterna")
+HC_16S_SourceTracker_map_its<-HC_16S_SourceTracker_map_its[,18:ncol(HC_16S_SourceTracker_map_its)]
+Sums_its<-colSums(HC_16S_SourceTracker_map_its)
+lables_its<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_its, labels=lables_its, main="Treatment Stegopterna", col=four_col_vec)
+#Baetis
+HC_16S_SourceTracker_map_itb<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Baetis")
+HC_16S_SourceTracker_map_itb<-HC_16S_SourceTracker_map_itb[,18:ncol(HC_16S_SourceTracker_map_itb)]
+Sums_itb<-colSums(HC_16S_SourceTracker_map_itb)
+lables_itb<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
+pie(Sums_itb, labels=lables_itb, main="Treatment Baetis", col=four_col_vec)
