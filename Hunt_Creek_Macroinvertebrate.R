@@ -12,6 +12,7 @@ library(plyr)
 library(dplyr)
 library(doBy)
 library(scales)
+library(RColorBrewer)
 
 #Functions
 ## Summarizes data.
