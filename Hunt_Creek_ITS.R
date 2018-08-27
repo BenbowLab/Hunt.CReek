@@ -55,7 +55,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 two_col_vec_reach<-c("skyblue3", "tomato3")
 
 #First work with rarefication plots
-HC_Shannon_ITS<-read.table("~/Desktop/shannon_ITS.txt", sep="\t", header=T)
+HC_Shannon_ITS<-read.table("~/Documents/MSU/Research/Hunt_Creek_Salmon/Microbes/ITS/shannon_ITS.txt", sep="\t", header=T)
 HC_Shannon_ITS$X<-NULL
 HC_Shannon_ITS$iteration<-NULL
 HC_Shannon_ITS$sequences.per.sample<-as.double(HC_Shannon_ITS$sequences.per.sample)
@@ -72,7 +72,7 @@ HC_Sh_ITS_c_m_var<-as.data.frame(HC_Sh_ITS_c_m_var)
 HC_Sh_ITS_c_m_var_m<-melt(HC_Sh_ITS_c_m_var, id.vars=c("Calculation","SampleID"))
 HC_Sh_ITS_c_m_var_c<-cast(HC_Sh_ITS_c_m_var_m, variable + SampleID ~ Calculation)
 #Get metadata through mapping file
-Hunt_Creek_ITS_map <- read.table("~/Desktop/Hunt_Creek_ITS_Map.txt", header=T)
+Hunt_Creek_ITS_map <- read.table("~/Documents/MSU/Research/Hunt_Creek_Salmon/Microbes/ITS/Hunt_Creek_ITS_Map.txt", header=T)
 #Merge metadata onto rarefication file
 HC_Sh_ITS_map <-merge(Hunt_Creek_ITS_map, HC_Sh_ITS_c_m_var_c, by="SampleID")
 names(HC_Sh_ITS_map)[names(HC_Sh_ITS_map)=="variable"] <- "Sequences_per_sample"
@@ -100,7 +100,7 @@ ggplot(HC_Sh_ITS_sum_m_sd, aes(x=Sequences_per_sample.x, y=mean, colour=Reach.x)
 #####################################
 
 #Get ITS OTU table
-Hunt_Creek_ITS<-read.table("~/Desktop/HC_ITS_OTU_Table.txt", sep="\t", header = T)
+Hunt_Creek_ITS<-read.table("~/Documents/MSU/Research/Hunt_Creek_Salmon/Microbes/ITS/HC_ITS_OTU_Table.txt", sep="\t", header = T)
 
 #Format data frame so the OTU.ID is row name
 row.names(Hunt_Creek_ITS)<-Hunt_Creek_ITS[,1]
@@ -138,12 +138,55 @@ summary(HC_ITS_indic)
 #6 indicator OTUs detected for biofilms the salmon reaches
 #They are New.CleanUp.ReferenceOTU2973, EU547495, AH008235, New.ReferenceOTU6, New.CleanUp.ReferenceOTU4525, and New.CleanUp.ReferenceOTU4648
 
+#split up for each year
+#Create biofilm matrix for year 1 with metadata
+HC_ITS_OTU_y1<-subset(HC_ITS_OTU_map, Year=="1")
+#how many OTUs BF Y1?
+#Delete OTUs with no observations
+cols_to_drop_Y1 = c(rep(TRUE, 15), colSums(HC_ITS_OTU_y1[,16:ncol(HC_ITS_OTU_y1)]) > 0)
+HC_ITS_OTU_y1<-HC_ITS_OTU_y1[,cols_to_drop_Y1]
+#There are 843 OTUs (number of variables - 15 metadata variables)
+sum(colSums(HC_ITS_OTU_y1[,16:ncol(HC_ITS_OTU_y1)]))
+#10,800 total sequence reads
+#without metadata for biofilms in year 1
+HC_ITS_OTU_y1_com<-HC_ITS_OTU_y1[,16:ncol(HC_ITS_OTU_y1)]
+HC_ITS_OTU_y1_samples<-as.vector(rownames(HC_ITS_OTU_y1))
+#Biofilm year 1 environmental variable table
+HC_ITS_OTU_y1_env<-HC_ITS_OTU_y1[,1:15]
+Total_Biofilm_Growth_PostCarcass_Y1<-as.factor(HC_ITS_OTU_y1_env$Total_Biofilm_Growth_PostCarcass)
+Reach_Y1<-as.factor(HC_ITS_OTU_y1_env$Reach)
+
+#Create biofilm matrix for year 2 with metadata
+HC_ITS_OTU_y2<-subset(HC_ITS_OTU_map, Year=="2")
+#how many OTUs BF Y2?
+#Delete OTUs with no observations
+cols_to_drop_Y2 = c(rep(TRUE, 15), colSums(HC_ITS_OTU_y2[,16:ncol(HC_ITS_OTU_y2)]) > 0)
+HC_ITS_OTU_y2<-HC_ITS_OTU_y2[,cols_to_drop_Y2]
+#There are 1804 OTUs (number of variables - 15 metadata variables)
+sum(colSums(HC_ITS_OTU_y2[,16:ncol(HC_ITS_OTU_y2)]))
+#21,600 total sequence reads
+#without metadata for biofilms in year 2
+HC_ITS_OTU_y2_com<-HC_ITS_OTU_y2[,16:ncol(HC_ITS_OTU_y2)]
+HC_ITS_OTU_y2_samples<-as.vector(rownames(HC_ITS_OTU_y2))
+#Biofilm year 1 environmental variable table
+HC_ITS_OTU_y2_env<-HC_ITS_OTU_y2[,1:15]
+Total_Biofilm_Growth_PostCarcass_Y2<-as.factor(HC_ITS_OTU_y2_env$Total_Biofilm_Growth_PostCarcass)
+Reach_Y2<-as.factor(HC_ITS_OTU_y2_env$Reach)
+
+#Year 1 permanova
+adonis(HC_ITS_OTU_y1_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass, data=HC_ITS_OTU_y1_env, method="jaccard", permutations=999)
+#No significant factors
+
+#Year 2 permanova
+adonis(HC_ITS_OTU_y2_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass, data=HC_ITS_OTU_y2_env, method="jaccard", permutations=999)
+#No significant factors
+
 #################
 #Analysis using phyla level taxonomy table
 #################
 
 #upload phyla level info
-Hunt_Creek_ITS_P<-read.table("~/Desktop/otu_table_HC_ITS_Phyla.txt", sep="\t", header = T)
+Hunt_Creek_ITS_P<-read.table("~/Documents/MSU/Research/Hunt_Creek_Salmon/Microbes/ITS/otu_table_HC_ITS_Phyla.txt", sep="\t", header = T)
 #Clasify as data.frame
 Hunt_Creek_ITS_P<-data.frame(Hunt_Creek_ITS_P)
 #Format data frame so the taxonomy is row name
@@ -157,6 +200,28 @@ str(HC_ITS_P_t)
 names(HC_ITS_P_t)
 #Merge metadata onto data table
 HC_ITS_P_map <-merge(Hunt_Creek_ITS_map_r, HC_ITS_P_t, by=0)
+
+#subset phyla info into biofilms for each year
+HC_ITS_P_map_y1<-subset(HC_ITS_P_map, Year=="1")
+HC_ITS_P_map_y1[,1:15]<-sapply(HC_ITS_P_map_y1[,1:15], as.factor)
+HC_ITS_P_map_y1_env<-HC_ITS_P_map_y1[,1:15]
+HC_ITS_P_map_y1_com<-HC_ITS_P_map_y1[,16:ncol(HC_ITS_P_map_y1)]
+#find most abundant phyla
+sort(colSums(HC_ITS_P_map_y1_com),decreasing=TRUE)
+#Ascomycota most abundant
+sum(colSums(HC_ITS_P_map_y1_com))
+#10800 reads, so only ascomycota over 3%
+
+#subset phyla info into biofilms for each year
+HC_ITS_P_map_y2<-subset(HC_ITS_P_map, Year=="2")
+HC_ITS_P_map_y2[,1:15]<-sapply(HC_ITS_P_map_y2[,1:15], as.factor)
+HC_ITS_P_map_y2_env<-HC_ITS_P_map_y2[,1:15]
+HC_ITS_P_map_y2_com<-HC_ITS_P_map_y2[,16:ncol(HC_ITS_P_map_y2)]
+#find most abundant phyla
+sort(colSums(HC_ITS_P_map_y2_com),decreasing=TRUE)
+#Ascomycota most abundant
+sum(colSums(HC_ITS_P_map_y2_com))
+#21600 reads, so only ascomycota and basidiomycota over 3%
 
 #Indicator analysis for phyla
 HC_ITS_p_indic<-multipatt(HC_ITS_P_t, HC_ITS_env$Reach, control = how(nperm=999))
