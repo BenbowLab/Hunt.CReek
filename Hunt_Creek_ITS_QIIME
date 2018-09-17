@@ -260,79 +260,59 @@ validate_demultiplexed_fasta.py -m Hunt_Creek_ITS_Map.txt -i HC_ITS.fna
 
 ################################
 
-pick_open_reference_otus.py -i HC_ITS.fna -r /macqiime/sh_qiime_release_s_20/sh_refs_qiime_ver7_97_s_20.11.2016.fasta -o otus_HC_ITS/
+wget ftp://ftp.microbio.me/qiime/tutorial_files/its-soils-tutorial.tgz || curl -O ftp://ftp.microbio.me/qiime/tutorial_files/its-soils-tutorial.tgz
+wget ftp://ftp.microbio.me/qiime/tutorial_files/its_12_11_otus.tgz ||  curl -O ftp://ftp.microbio.me/qiime/tutorial_files/its_12_11_otus.tgz
+tar -xzf its-soils-tutorial.tgz
+tar -xzf its_12_11_otus.tgz
+gunzip ./its_12_11_otus/rep_set/97_otus.fasta.gz
+gunzip ./its_12_11_otus/taxonomy/97_otu_taxonomy.txt.gz
+pick_open_reference_otus.py -i HC_ITS.fna -r its_12_11_otus/rep_set/97_otus.fasta -o otus_HC_ITS/ -p its-soils-tutorial/params.txt --suppress_align_and_tree
 
-################################
-# 7. assigning taxonomy
-
-# 7 (a) - i rep_set.fna (from 5b) -r greengenes_otu_97.fasta -t -r greengenes_otu_97_taxonomy.txt - c cutoff value
-
-assign_taxonomy.py -i rep_set_HC_ITS.fna -r /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta -t /macqiime/anaconda/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt -o gg_taxonomy_HC_ITS/
-
-#  7 (b) generating OTU table
-# Using the OTU map (5a), the taxonomic assignments (7) and the list of chimeric OTUs to remove (6) to assemble a readable matrix of OTU abundance in each sample with taxonomic identifiers for each OTU.
-
-make_otu_table.py -i HC_otus_ITS.txt -t rep_set_HC_ITS_tax_assignments.txt -o otu_table_HC_ITS_nc.biom -e rep_set_HC_ITS_failures.fasta -e HC_ITS_chimeras.txt
 
 # 7 (b) remove singletons
 
-filter_otus_from_otu_table.py -i otu_table_HC_ITS_nc.biom -o otu_table_HC_ITS_nc_ns.biom -n 2
+filter_otus_from_otu_table.py -i otu_table_mc2_w_tax.biom -o otu_table_mc2_w_tax_ns.biom -n 2
 
 # to add metadata to biom file 
 
-biom add-metadata -i otu_table_HC_ITS_nc_ns.biom -o otu_table_HC_ITS_nc_ns_meta.biom --sample-metadata-fp Hunt_Creek_ITS_Map.txt
+biom add-metadata -i otu_table_mc2_w_tax_ns.biom -o otu_table_mc2_w_tax_ns_meta.biom --sample-metadata-fp Hunt_Creek_ITS_Map.txt
+
+# rarefy data
+#alpha_params.txt is a text document with the following text - "alpha_diversity:metrics simpson,shannon,observed_species"
+
+alpha_rarefaction.py -i otu_table_mc2_w_tax_ns_meta.biom -m Hunt_Creek_ITS_Map.txt -p alpha_params.txt --max_rare_depth 3000 -o alpha_rare_HC/
+
+#The best value for rarefaction is 900
+
+single_rarefaction.py -i otu_table_mc2_w_tax_ns_meta.biom -o otu_table_HC_rare_meta.biom -d 900
 
 # 7 (c) summary of taxonomy (biom)
 
-biom summarize-table -i otu_table_HC_ITS_nc_ns_meta.biom  -o otu_table_summary_HC_ITS.txt
+biom summarize-table -i otu_table_HC_rare_meta.biom  -o otu_table_summary_HC_ITS.txt
 
 # 7 (d) convert biom table to txt
 #-i from 7(b)
 
-biom convert -i otu_table_HC_ITS_nc_ns_meta.biom -o HC_ITS_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
+biom convert -i otu_table_HC_rare_meta.biom -o HC_ITS_table_tabseparated.txt --to-tsv --header-key="taxonomy" --output-metadata-id="Consensus Lineage"
 
 #delete "#" to make r compatible
 
 # 7 (e) summarize taxa tables (relative abundance)
 
-summarize_taxa.py -i otu_table_HC_ITS_nc_ns_meta.biom -o taxonomy_summaries_HC_ITS_RA/
+summarize_taxa.py -i otu_table_HC_rare_meta.biom -o taxonomy_summaries_HC_ITS_RA/
 
 # 7 (f) summarize taxa tables (absolute counts)
 
-summarize_taxa.py -i otu_table_HC_ITS_nc_ns_meta.biom -a -o taxonomy_summaries_HC_ITS_counts/
+summarize_taxa.py -i otu_table_HC_rare_meta.biom -a -o taxonomy_summaries_HC_ITS_counts/
 
 #output is a folder with .txt files of each different taxonomic level L2 (phyla); L3 (class); L4 (order); L5 (family); L6 (genus)
 
 ################################
 # calculate  alpha diversity
 
-alpha_diversity.py -i otu_table_HC_ITS_nc_ns_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_ITS.txt
-
-###################
-#Make phylogenetic tree
-
-make_phylogeny.py -i rep_set_HC_ITS_aligned.fasta -o HC_ITS_phylo.tre
-
-#alpha and beta diversity based on phylogeny
-
-alpha_diversity.py -i otu_table_HC_ITS_nc_ns_meta.biom -m PD_whole_tree -o adiv_HC_ITS.txt -t HC_ITS_phylo.tre
-
-beta_diversity.py -i otu_table_HC_ITS_nc_ns_meta.biom -m weighted_unifrac -o HC_ITS_beta_div/ -t HC_ITS_phylo.tre
-
-#Makek PcOA plots in emperor
-
-principal_coordinates.py -i weighted_unifrac_otu_table_HC_ITS.txt -o HC_ITS_beta_div_coords.txt
-
-make_emperor.py -i HC_ITS_beta_div_coords.txt -m Hunt_Creek_ITS_Map.txt -b "Date,Reach,Source,Total_Biofilm_Growth,Total_Biofilm_Growth_PostCarcass,Year" -o HC_ITS_PCoA
-
-##################
-#Make stacked bargraphs
-
-summarize_taxa_through_plots.py -o taxa_summary_by_treatment -i otu_table_HC_ITS_nc_ns_meta.biom -m Hunt_Creek_ITS_Map.txt -c Reach -s
-summarize_taxa_through_plots.py -o taxa_summary_by_year -i otu_table_HC_ITS_nc_ns_meta.biom -m Hunt_Creek_ITS_Map.txt -c Year -s
-summarize_taxa_through_plots.py -o taxa_summary_by_source -i otu_table_HC_ITS_nc_ns_meta.biom -m Hunt_Creek_ITS_Map.txt -c Source -s
+alpha_diversity.py -i otu_table_HC_rare_meta.biom -m chao1,simpson,shannon,observed_species,heip_e,simpson_e -o alpha_div_HC_ITS.txt
 
 ########################
 #Make network files for cytoscape
 
-make_otu_network.py -i otu_table_HC_ITS_nc.biom -m Hunt_Creek_ITS_Map.txt -o otu_HC_ITS_network
+make_otu_network.py -i otu_table_HC_rare_meta.biom -m Hunt_Creek_ITS_Map.txt -o otu_HC_ITS_network
