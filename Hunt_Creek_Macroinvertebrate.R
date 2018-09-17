@@ -13,6 +13,8 @@ library(dplyr)
 library(doBy)
 library(scales)
 library(RColorBrewer)
+library(indicspecies)
+library(lme4)
 
 #Functions
 ## Summarizes data.
@@ -71,20 +73,22 @@ names(Hunt_Creek_Macroinvertebrates)
 Hunt_Creek_Macroinvertebrates$SampleID<-factor(paste(Hunt_Creek_Macroinvertebrates$Reach, Hunt_Creek_Macroinvertebrates$Subreach, Hunt_Creek_Macroinvertebrates$Date, Hunt_Creek_Macroinvertebrates$Type))
 #Create new column that combines taxonomic variables to family level
 Hunt_Creek_Macroinvertebrates$Taxonomy<-(paste(Hunt_Creek_Macroinvertebrates$Class, Hunt_Creek_Macroinvertebrates$Order, Hunt_Creek_Macroinvertebrates$Family))
-#Delete rows with missing values (not IDed yet) and pupae (named Hexapod NA NA in taxonomy column)
-HC_Inverts_Subset<-subset(Hunt_Creek_Macroinvertebrates, Value >= 0 & Taxonomy != "Hexapoda NA NA" & Taxonomy !="Hexapoda Trichoptera NA" & Taxonomy != "Hexapoda Plecoptera NA" & Taxonomy !="Hexapoda Diptera NA" & Date!="10/25/15" & Date!="10/4/15" & Date!="3/19/16")
+#Delete pupae (named Hexapod NA NA in taxonomy column)
+HC_Inverts_Subset<-subset(Hunt_Creek_Macroinvertebrates, Value >= 0 & Taxonomy != "Hexapoda NA NA" & Taxonomy !="Hexapoda Trichoptera NA" & Taxonomy != "Hexapoda Plecoptera NA" & Taxonomy !="Hexapoda Diptera NA" & Taxonomy !="Hexapoda Ephemeroptera NA")
 #Convert Taxonomy charater to factor
 HC_Inverts_Subset$Taxonomy<-as.factor(HC_Inverts_Subset$Taxonomy)
 #Check levels of SampleID and Taxonomy variables
 str(HC_Inverts_Subset)
 levels(HC_Inverts_Subset$SampleID)
 levels(HC_Inverts_Subset$Taxonomy)
+sum(HC_Inverts_Subset$Value)
 
 #Convert to community table for community analysis
 HC_M_Matrix <- cast(HC_Inverts_Subset, Date + Reach + Subreach + Days_Since_Carcass_Introduction + Year + Days_Since_Study_Start ~ Taxonomy, value = "Value", fun.aggregate =sum)
 #create file with only community data
 str(HC_M_Matrix)
 HC_Inverts_Community <- HC_M_Matrix[,7:ncol(HC_M_Matrix)]
+colSums(HC_Inverts_Community)
 #Replace "na" with 0
 HC_Inverts_Community[is.na(HC_Inverts_Community)]<-0
 str(HC_Inverts_Community)
@@ -111,9 +115,8 @@ adonis(HC_Inverts_Community ~ Reach*Sample_number*Year, data=HC_Inverts_Env, met
 
 #Create year 1 macro data table
 HC_M_Matrix_Y1<-subset(HC_M_Matrix, Year==1)
-HC_Inverts_Community_Y1 <- as.matrix(HC_M_Matrix_Y1[,7:ncol(HC_M_Matrix_Y1)])
-#Replace "na" with 0
-HC_Inverts_Community_Y1[is.na(HC_Inverts_Community_Y1)]<-0
+HC_Inverts_Community_Y1 <- HC_M_Matrix_Y1[,7:ncol(HC_M_Matrix_Y1)]
+any(is.na(HC_Inverts_Community_Y1))
 str(HC_Inverts_Community_Y1)
 #Separate environmental data
 HC_Inverts_Env_Y1<-HC_M_Matrix_Y1[,1:6]
@@ -122,9 +125,8 @@ HC_Inverts_Env_Y1$Days_Since_Carcass_Introduction<-as.factor(HC_Inverts_Env_Y1$D
 
 #Create Year 2 macro data table
 HC_M_Matrix_Y2<-subset(HC_M_Matrix, Year==2)
-HC_Inverts_Community_Y2 <- as.matrix(HC_M_Matrix_Y2[,7:ncol(HC_M_Matrix_Y2)])
-#Replace "na" with 0
-HC_Inverts_Community_Y2[is.na(HC_Inverts_Community_Y2)]<-0
+HC_Inverts_Community_Y2 <- HC_M_Matrix_Y2[,7:ncol(HC_M_Matrix_Y2)]
+any(is.na(HC_Inverts_Community_Y2))
 str(HC_Inverts_Community_Y2)
 #Separate environmental data
 HC_Inverts_Env_Y2<-HC_M_Matrix_Y2[,1:6]
@@ -134,6 +136,16 @@ HC_Inverts_Env_Y2$Days_Since_Carcass_Introduction<-as.factor(HC_Inverts_Env_Y2$D
 #PERMANOVAs for each year
 adonis(HC_Inverts_Community_Y1 ~ Reach*Days_Since_Carcass_Introduction, data=HC_Inverts_Env_Y1, method="bray", permutations=999)
 adonis(HC_Inverts_Community_Y2 ~ Reach*Days_Since_Carcass_Introduction, data=HC_Inverts_Env_Y2, method="bray", permutations=999)
+
+#Indicator taxa analysis
+#Year 1
+HC_inv_y1_indic<-signassoc(HC_Inverts_Community_Y1, cluster=HC_Inverts_Env_Y1$Reach,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_inv_y1_indic[,c(ncol(HC_inv_y1_indic),(ncol(HC_inv_y1_indic)-1))]
+#Indicator analysis found three taxa: Polycentropidae, Brachycentridae, Heptageniidae
+#Year 2
+HC_inv_y2_indic<-signassoc(HC_Inverts_Community_Y2, cluster=HC_Inverts_Env_Y2$Reach,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_inv_y2_indic[,c(ncol(HC_inv_y2_indic),(ncol(HC_inv_y2_indic)-1))]
+#Indicator analysis found two taxa: Elmidae and Brachycentridae
 
 ########################################
 #Stacked bar graphs
@@ -190,6 +202,7 @@ Year<-as.factor(gsub("9/5/14", "1", Year))
 Year<-as.factor(gsub("8/15/16", "2", Year))
 
 #NMDS analysis
+HC_Inverts_Community<-as.matrix(HC_Inverts_Community)
 HC_Macroinvertebrate_NMDS<-metaMDS(HC_Inverts_Community, distance="bray")
 
 #Stressplot macroinvertebrate Nmds
@@ -238,11 +251,10 @@ rowSums(totals)
 sort(totals,decreasing=TRUE)[1:6]
 
 #Make line plot for Baetids
-#Year 1
 HC_M_Matrix$RowSums<-rowSums(HC_M_Matrix[,7:ncol(HC_M_Matrix)])
 HC_M_Matrix$Treatment<-HC_M_Matrix$Reach
 HC_M_Matrix$Baetidae<-(HC_M_Matrix$"Hexapoda Ephemeroptera Baetidae"/HC_M_Matrix$RowSums)
-Baetidaeplot<-data.frame(HC_M_Matrix[,c(55,6,54)])
+Baetidaeplot<-data.frame(HC_M_Matrix[,c(56,6,57)])
 Baetidaeplot$Days_Since_Study_Start<-as.numeric(Baetidaeplot$Days_Since_Study_Start)
 btd<-summarySE(Baetidaeplot, measurevar="Baetidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
 ggplot(btd, aes(x=Days_Since_Study_Start, y=Baetidae, colour=Treatment)) + 
@@ -260,7 +272,7 @@ ggplot(btd, aes(x=Days_Since_Study_Start, y=Baetidae, colour=Treatment)) +
 
 #Make line plot for Simuliids
 HC_M_Matrix$Simuliidae<-(HC_M_Matrix$"Hexapoda Diptera Simuliidae"/HC_M_Matrix$RowSums)
-Simuliidaeplot<-data.frame(HC_M_Matrix[,c(54,6,56)])
+Simuliidaeplot<-data.frame(HC_M_Matrix[,c(56,6,58)])
 Simuliidaeplot$Days_Since_Study_Start<-as.numeric(Simuliidaeplot$Days_Since_Study_Start)
 sim<-summarySE(Simuliidaeplot, measurevar="Simuliidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
 ggplot(sim, aes(x=Days_Since_Study_Start, y=Simuliidae, colour=Treatment)) + 
@@ -276,17 +288,17 @@ ggplot(sim, aes(x=Days_Since_Study_Start, y=Simuliidae, colour=Treatment)) +
   scale_color_manual(values=c("skyblue3", "tomato3")) +
   scale_x_continuous(breaks=seq(0,700,100))
 
-#Make line plot for Rhyacophila
-HC_M_Matrix$Rhyacophila<-(HC_M_Matrix$"Hexapoda Trichoptera Rhyacophila"/HC_M_Matrix$RowSums)
-Rhyacophilaplot<-data.frame(HC_M_Matrix[,c(54,6,57)])
-Rhyacophilaplot$Days_Since_Study_Start<-as.numeric(Rhyacophilaplot$Days_Since_Study_Start)
-rhy<-summarySE(Rhyacophilaplot, measurevar="Rhyacophila", groupvars=c("Days_Since_Study_Start", "Treatment"))
-ggplot(rhy, aes(x=Days_Since_Study_Start, y=Rhyacophila, colour=Treatment)) + 
-  geom_errorbar(aes(ymin=Rhyacophila-se, ymax=Rhyacophila+se), width=.1) +
+#Make line plot for Polycentropidae
+HC_M_Matrix$Cyrnellusfraternus<-(HC_M_Matrix$"Hexapoda Trichoptera Polycentropidae"/HC_M_Matrix$RowSums)
+Cfplot<-data.frame(HC_M_Matrix[,c(6,56,59)])
+Cfplot$Days_Since_Study_Start<-as.numeric(Cfplot$Days_Since_Study_Start)
+Cf<-summarySE(Cfplot, measurevar="Cyrnellusfraternus", groupvars=c("Days_Since_Study_Start", "Treatment"))
+ggplot(Cf, aes(x=Days_Since_Study_Start, y=Cyrnellusfraternus, colour=Treatment)) + 
+  geom_errorbar(aes(ymin=Cyrnellusfraternus-se, ymax=Cyrnellusfraternus+se), width=.1) +
   geom_line(size=1.5) +
   geom_point(size=2) +
   xlab("Days") +
-  ylab("Rhyacophilidae relative abundance +/- SE") +
+  ylab("Cyrnellus fraternus relative abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
@@ -294,38 +306,56 @@ ggplot(rhy, aes(x=Days_Since_Study_Start, y=Rhyacophila, colour=Treatment)) +
   scale_color_manual(values=c("skyblue3", "tomato3")) +
   scale_x_continuous(breaks=seq(0,700,100))
 
-#Make line plot for Chironomidae
-HC_M_Matrix$Chironomidae<-(HC_M_Matrix$"Hexapoda Diptera Chironomidae"/HC_M_Matrix$RowSums)
-Chironomidplot<-data.frame(HC_M_Matrix[,c(54,6,58)])
-Chironomidplot$Days_Since_Study_Start<-as.numeric(Chironomidplot$Days_Since_Study_Start)
-chi<-summarySE(Chironomidplot, measurevar="Chironomidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
-ggplot(chi, aes(x=Days_Since_Study_Start, y=Chironomidae, colour=Treatment)) + 
-  geom_errorbar(aes(ymin=Chironomidae-se, ymax=Chironomidae+se), width=.1) +
+#Make line plot for Brachycentridae
+HC_M_Matrix$Brachycentridae<-(HC_M_Matrix$"Hexapoda Trichoptera Brachycentridae"/HC_M_Matrix$RowSums)
+Brachyplot<-data.frame(HC_M_Matrix[,c(56,6,60)])
+Brachyplot$Days_Since_Study_Start<-as.numeric(Brachyplot$Days_Since_Study_Start)
+bra<-summarySE(Brachyplot, measurevar="Brachycentridae", groupvars=c("Days_Since_Study_Start", "Treatment"))
+ggplot(bra, aes(x=Days_Since_Study_Start, y=Brachycentridae, linetype=Treatment)) + 
+  geom_errorbar(aes(ymin=Brachycentridae-se, ymax=Brachycentridae+se), width=.1) +
   geom_line(size=1.5) +
   geom_point(size=2) +
   xlab("Days") +
-  ylab("Chironomidae relative abundance +/- SE") +
+  ylab("Brachycentrus relative abundance +/- SE") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-        axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=c("skyblue3", "tomato3")) +
-  scale_x_continuous(breaks=seq(0,700,100))
+  scale_x_continuous(breaks=seq(0,700,100)) + 
+  geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black")
 
 #Make line plot for Heptageniidae
 HC_M_Matrix$Heptageniidae<-(HC_M_Matrix$"Hexapoda Ephemeroptera Heptageniidae"/HC_M_Matrix$RowSums)
-Heptageniidplot<-data.frame(HC_M_Matrix[,c(54,6,59)])
+Heptageniidplot<-data.frame(HC_M_Matrix[,c(56,6,61)])
 Heptageniidplot$Days_Since_Study_Start<-as.numeric(Heptageniidplot$Days_Since_Study_Start)
 hep<-summarySE(Heptageniidplot, measurevar="Heptageniidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
-ggplot(hep, aes(x=Days_Since_Study_Start, y=Heptageniidae, colour=Treatment)) + 
+ggplot(hep, aes(x=Days_Since_Study_Start, y=Heptageniidae, linetype=Treatment)) + 
   geom_errorbar(aes(ymin=Heptageniidae-se, ymax=Heptageniidae+se), width=.1) +
   geom_line(size=1.5) +
   geom_point(size=2) +
-  xlab("Days") +
-  ylab("Heptageniidae relative abundance +/- SE") +
+  xlab("Days since study start") +
+  ylab("Heptagenia flavescens relative abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=c("skyblue3", "tomato3")) +
-  scale_x_continuous(breaks=seq(0,700,100))
+  scale_x_continuous(breaks=seq(0,700,100)) + 
+  geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black")
+
+#Make line plot for Elmidae
+HC_M_Matrix$Elmidae<-(HC_M_Matrix$"Hexapoda Coleoptera Elmidae"/HC_M_Matrix$RowSums)
+Elmidplot<-data.frame(HC_M_Matrix[,c(56,6,62)])
+Elmidplot$Days_Since_Study_Start<-as.numeric(Elmidplot$Days_Since_Study_Start)
+El<-summarySE(Elmidplot, measurevar="Elmidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
+ggplot(El, aes(x=Days_Since_Study_Start, y=Elmidae, linetype=Treatment)) + 
+  geom_errorbar(aes(ymin=Elmidae-se, ymax=Elmidae+se), width=.1) +
+  geom_line(size=1.5) +
+  geom_point(size=2) +
+  xlab("Days since study start") +
+  ylab("Elmidae relative abundance") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
+  scale_x_continuous(breaks=seq(0,700,100)) + 
+  geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black")

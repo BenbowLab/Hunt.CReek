@@ -54,6 +54,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 #color vectors
 two_col_vec <- c("black", "bisque3")
 two_col_vec_reach<-c("skyblue3", "tomato3")
+two_col_vec_taxa<-c("#33a02c", "#1f78b4")
 three_col_vec<- c("#1b9e77", "#d95f02", "#7570b3")
 four_col_vec<-c("#7fc97f", "#beaed4", "#fdc086", "#ffff99")
 five_col_vec<- c("#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0")
@@ -83,6 +84,7 @@ Hunt_Creek_16S_map <- read.table("~/Documents/MSU/Research/Hunt_Creek_Salmon/Mic
 HC_Sh_map <-merge(Hunt_Creek_16S_map, HC_Sh_c_m_var_c, by="SampleID")
 names(HC_Sh_map)[names(HC_Sh_map)=="variable"] <- "Sequences_per_sample"
 HC_Sh_map$Sequences_per_sample<-as.numeric(as.character(HC_Sh_map$Sequences_per_sample))
+HC_Sh_map$Source<-revalue(HC_Sh_map$Source, c("Baetis"="Insect", "Heptagenia"="Insect", "Rhyacophila"="Insect", "Simulium"="Insect", "Stegopterna"="Insect"))
 HC_Sh_map_sum_m <- summarySE(HC_Sh_map, measurevar=c("mean"), groupvars=c("Sequences_per_sample","Source"))
 HC_Sh_map_sum_v <- summarySE(HC_Sh_map, measurevar=c("variance"), groupvars=c("Sequences_per_sample","Source"))
 HC_Sh_map_sum_v$StandDev<-sqrt(HC_Sh_map_sum_v$variance)
@@ -94,13 +96,13 @@ ggplot(HC_Sh_sum_m_sd, aes(x=Sequences_per_sample.x, y=mean, colour=Source.x)) +
   geom_line(size=1.5) +
   geom_point(size=1.5) +
   xlab("Sequences per sample") +
-  ylab("Rarefaction measure: Shannon +/- SE") +
+  ylab("Shannon H' Diversity") +
   labs(colour = "Source") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=seven_col_vec)
+  scale_color_manual(values=three_col_vec)
 
 #####################################
 #Upload data tables generated in QIIME and manipulate to make "r friendly"
@@ -204,25 +206,35 @@ sum(colSums(HC_16S_OTU_map_car[,18:ncol(HC_16S_OTU_map_car)]))
 #Subset into environmental and community data frames
 HC_16S_OTU_car_env<-HC_16S_OTU_map_car[,1:17]
 HC_16S_OTU_car_com<-HC_16S_OTU_map_car[,18:ncol(HC_16S_OTU_map_car)]
-
+#Year 1
+HC_16S_OTU_map_car_Y1<-subset(HC_16S_OTU_map_car, Year=="1")
+#Delete OTUs with no observations
+cols_to_drop_car_Y1 = c(rep(TRUE, 17), colSums(HC_16S_OTU_map_car_Y1[,18:ncol(HC_16S_OTU_map_car_Y1)]) > 0)
+HC_16S_OTU_map_car_Y1<-HC_16S_OTU_map_car_Y1[,cols_to_drop_car_Y1]
+#There are 4854 OTUs in year 1(number of variables - 17 metadata variables)
+sum(colSums(HC_16S_OTU_map_car_Y1[,18:ncol(HC_16S_OTU_map_car_Y1)]))
+#21,600 total sequence reads
+#Year 2
+HC_16S_OTU_map_car_Y2<-subset(HC_16S_OTU_map_car, Year=="2")
+#Delete OTUs with no observations
+cols_to_drop_car_Y2 = c(rep(TRUE, 17), colSums(HC_16S_OTU_map_car_Y2[,18:ncol(HC_16S_OTU_map_car_Y2)]) > 0)
+HC_16S_OTU_map_car_Y2<-HC_16S_OTU_map_car_Y2[,cols_to_drop_car_Y2]
+#There are 1894 OTUs in year 2(number of variables - 17 metadata variables)
+sum(colSums(HC_16S_OTU_map_car_Y2[,18:ncol(HC_16S_OTU_map_car_Y2)]))
+#24,000 total sequence reads
 
 #UNI-carcass permanova with unifrac distances
 adonis(as.dist(H_C_16S_uni_car_com) ~ Year, data=H_C_16S_uni_car_env, permutations=999)
 #NMDS carcass
 HC_NMDS_uni_c<-metaMDS(as.dist(H_C_16S_uni_car_com))
 HC_NMDS_uni_c
+stressplot(HC_NMDS_uni_c)
 ordiplot(HC_NMDS_uni_c, type="n", main="Salmon carcass 16S communities")
 with(HC_NMDS_uni_c, points(HC_NMDS_uni_c, display="sites", col=two_col_vec[HC_16S_uni_car_Year], pch=19, pt.bg=two_col_vec))
 with(HC_NMDS_uni_c, legend("topleft", legend=levels(HC_16S_uni_car_Year), bty="n", col=two_col_vec, pch=19, pt.bg=two_col_vec))
 with(HC_NMDS_uni_c, ordiellipse(HC_NMDS_uni_c, HC_16S_uni_car_Year, kind="se", conf=0.95, lwd=2, col="black", show.groups = "Year 1"))
 with(HC_NMDS_uni_c, ordiellipse(HC_NMDS_uni_c, HC_16S_uni_car_Year, kind="se", conf=0.95, lwd=2, col="bisque2", show.groups = "Year 2"))
 with(HC_NMDS_uni_c, legend("topright", legend="2D Stress: 0.09", bty="n"))
-#Indicator analysis to see what groups are driving this change
-HC_car_indic<-multipatt(HC_16S_OTU_car_com, HC_16S_OTU_car_env$Year, control = how(nperm=999))
-summary(HC_car_indic)
-#186 indicator OTUs detected
-#173 for year 1 (10 at stat=1.000)
-#13 for year 2
 
 #upload phyla level info and run indicator analysis for carcass/generate box plots
 #Upload phyla level files for each run
@@ -415,95 +427,43 @@ BF_Y2_Time<-HC_16S_P_map_bf_y2_env$Total_Biofilm_Growth_PostCarcass
 BF_Y1_RT<-paste(BF_Y1_Reach, BF_Y1_Time)
 BF_Y2_RT<-paste(BF_Y2_Reach, BF_Y2_Time)
 #Indicator analysis of biofilms year 1 to see what phyla are driving this change
-HC_p_bf_y1_indic<-multipatt(HC_16S_P_map_bf_y1_com, BF_Y1_RT, control = how(nperm=999))
-summary(HC_p_bf_y1_indic)
-#indicator analysis found 13 phyla
-#indicating salmon reaches are Euryarchaeota, Crenarchaeota, Spirochaetes and GN04.
+HC_p_bf_y1_indic<-signassoc(HC_16S_P_map_bf_y1_com, cluster=BF_Y1_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_bf_y1_indic[,c(ncol(HC_p_bf_y1_indic),(ncol(HC_p_bf_y1_indic)-1))]
+#indicator analysis found 6 phyla: Euryarchaeota (8 (Salmon 14)), Actinobacteria (2 (control 14)), Cyanobacteria (8), Firmicutes (8), Gemmatimonadetes (5 (Control 264)), Spirochaetes (8)
+HC_p_bf_y1_indic
+#Four indicate salmon reaches 2 weeks after introduction: Euryarchaeota, Cyanobacteria, Firmicutes, and Spirochaetes
 #Indicator analysis of biofilms year 2 to see what phyla are driving this change
-HC_p_bf_y2_indic<-multipatt(HC_16S_P_map_bf_y2_com, BF_Y2_RT, control = how(nperm=999))
-summary(HC_p_bf_y2_indic)
-#indicator analysis found 6 phyla
-#Indicating control reaches (and salmon before introduction) was Elusimicrobia
+HC_p_bf_y2_indic<-signassoc(HC_16S_P_map_bf_y2_com, cluster=BF_Y2_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_bf_y2_indic[,c(ncol(HC_p_bf_y2_indic),(ncol(HC_p_bf_y2_indic)-1))]
+#indicator analysis found 5 phyla: Acidobacteria (12 (Salmon 311)), Armatimonadetes (7 (Salmon 0)), Cyanobacteria (2 (Control 16)), Firmicutes (3 (Control 162)), Proteobacteria (9 (Salmon 162))
+HC_p_bf_y2_indic
+#Two indicate salmon reaches after introduction: Proteobacteria and Acidobacteria indicate salmon reaches
 
-#Now run models to see if relative abundances of indicator taxa significantly differ by time and treatment
-#Year 1
-HC_16S_P_map_bf_y1$Total_Biofilm_Growth_PostCarcass<-as.numeric(as.character(HC_16S_P_map_bf_y1$Total_Biofilm_Growth_PostCarcass))
-#Euryarchaeota
-#Use a poisson distribution
-E<-glmer(k__Archaea.p__Euryarchaeota ~ Reach*Total_Biofilm_Growth_PostCarcass + (1|Subreach), family=poisson, data = HC_16S_P_map_bf_y1)
-summary(E)
-#Reach and time significant. AIC=132.8
-#Crenarchaeota
-#Use a poisson distribution
-C<-glmer(k__Archaea.p__Crenarchaeota ~ Reach*Total_Biofilm_Growth_PostCarcass + (1|Subreach), family=poisson, data = HC_16S_P_map_bf_y1)
-summary(C)
-#Intercept, reach and reach*time interaction significant. AIC=89.6
-#Spirochaetes
-#Use a poisson distribution
-S<-glmer(k__Bacteria.p__Spirochaetes ~ Reach*Total_Biofilm_Growth_PostCarcass + (1|Subreach), family=poisson, data = HC_16S_P_map_bf_y1)
-summary(S)
-#Reach and reach*time interaction significant. AIC=560.8
-#GN04
-#Use a poisson distribution
-G<-glmer(k__Bacteria.p__GN04 ~ Reach*Total_Biofilm_Growth_PostCarcass + (1|Subreach), family=poisson, data = HC_16S_P_map_bf_y1)
-summary(G)
-#No significant factors. AIC=38
-#Year 2
-HC_16S_P_map_bf_y2$Total_Biofilm_Growth_PostCarcass<-as.numeric(as.character(HC_16S_P_map_bf_y2$Total_Biofilm_Growth_PostCarcass))
-#Elusimicrobia
-#Use a poisson distribution
-E<-glmer(k__Bacteria.p__Elusimicrobia ~ Reach*Total_Biofilm_Growth_PostCarcass + (1|Subreach), family=poisson, data = HC_16S_P_map_bf_y2)
-summary(E)
-#Reach and Reach*Time significant. AIC=64.6
-
-#limit phyla data to biofilms
-HC_16S_P_map_BF<-subset(HC_16S_P_map, Source == "Biofilm")
-#Make line plot for Euryarchaeota, Crenarchaeota, Spirochaetes, and Elusimicrobia for salmon vs control
-HC_16S_P_map_BF$Treatment<-as.factor(HC_16S_P_map_BF$Reach)
-HC_16S_P_map_BF$k__Archaea.p__Euryarchaeota<-as.numeric(HC_16S_P_map_BF$"k__Archaea.p__Euryarchaeota")
-Eur <- summarySE(HC_16S_P_map_BF, measurevar="k__Archaea.p__Euryarchaeota", groupvars=c("Days_Since_Study_Start","Treatment"))
-Eur$Taxa<-rep("Euryarchaeota", 24)
-names(Eur)[names(Eur) == 'k__Archaea.p__Euryarchaeota'] <- 'Mean'
-HC_16S_P_map_BF$k__Archaea.p__Crenarchaeota<-as.numeric(HC_16S_P_map_BF$"k__Archaea.p__Crenarchaeota")
-Cre <- summarySE(HC_16S_P_map_BF, measurevar="k__Archaea.p__Crenarchaeota", groupvars=c("Days_Since_Study_Start","Treatment"))
-Cre$Taxa<-rep("Crenarchaeota", 24)
-names(Cre)[names(Cre) == 'k__Archaea.p__Crenarchaeota'] <- 'Mean'
-HC_16S_P_map_BF$k__Bacteria.p__Spirochaetes<-as.numeric(HC_16S_P_map_BF$"k__Bacteria.p__Spirochaetes")
-Spi <- summarySE(HC_16S_P_map_BF, measurevar="k__Bacteria.p__Spirochaetes", groupvars=c("Days_Since_Study_Start","Treatment"))
-Spi$Taxa<-rep("Spirochaetes", 24)
-names(Spi)[names(Spi) == 'k__Bacteria.p__Spirochaetes'] <- 'Mean'
-HC_16S_P_map_BF$k__Bacteria.p__Elusimicrobia<-as.numeric(HC_16S_P_map_BF$"k__Bacteria.p__Elusimicrobia")
-Elu <- summarySE(HC_16S_P_map_BF, measurevar="k__Bacteria.p__Elusimicrobia", groupvars=c("Days_Since_Study_Start","Treatment"))
-Elu$Taxa<-rep("Elusimicrobia", 24)
-names(Elu)[names(Elu) == 'k__Bacteria.p__Elusimicrobia'] <- 'Mean'
-BFPlotdf<-rbind(Eur,Cre,Elu)
-ggplot(BFPlotdf, aes(x=Days_Since_Study_Start, y=Mean, colour=Taxa)) + 
+#Of the six, only plot most abundant: Proteobacteria, Cyanobacteria, and Acidobacteria
+HC_16S_P_map_bf<-subset(HC_16S_P_map, Source=="Biofilm")
+HC_16S_P_map_bf$k__Bacteria.p__Proteobacteria<-as.numeric(HC_16S_P_map_bf$k__Bacteria.p__Proteobacteria)
+ProBF <- summarySE(HC_16S_P_map_bf, measurevar="k__Bacteria.p__Proteobacteria", groupvars=c("Days_Since_Study_Start","Reach"))
+names(ProBF)[names(ProBF) == 'k__Bacteria.p__Proteobacteria'] <- 'Mean'
+ProBF$Phylum<-rep("Proteobacteria",24)
+HC_16S_P_map_bf$k__Bacteria.p__Cyanobacteria<-as.numeric(HC_16S_P_map_bf$k__Bacteria.p__Cyanobacteria)
+CyBF <- summarySE(HC_16S_P_map_bf, measurevar="k__Bacteria.p__Cyanobacteria", groupvars=c("Days_Since_Study_Start","Reach"))
+names(CyBF)[names(CyBF) == 'k__Bacteria.p__Cyanobacteria'] <- 'Mean'
+CyBF$Phylum<-rep("Cyanobacteria",24)
+IndBF<-rbind(ProBF,CyBF)
+ggplot(IndBF, aes(x=Days_Since_Study_Start, y=Mean, colour=Phylum)) + 
   geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=.1) +
-  geom_line(size=1.5, aes(linetype=Treatment)) +
+  geom_line(size=1.5, aes(linetype=Reach)) +
   geom_point(size=3) +
-  xlab("Days of biofilm growth") +
-  ylab("Count +/- SE") +
+  xlab("Days since study start") +
+  ylab("Standardized Abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=three_col_vec) +
+  scale_color_manual(values=two_col_vec_taxa) +
   scale_x_continuous(breaks=seq(0,700,100)) + 
-  geom_vline(xintercept = c(30,400))
-ggplot(Spi, aes(x=Days_Since_Study_Start, y=Mean)) + 
-  geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=.1) +
-  geom_line(size=1.5, aes(linetype=Treatment)) +
-  geom_point(size=3) +
-  xlab("Days of biofilm growth") +
-  ylab("Count +/- SE") +
-  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-        axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
-        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
-        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=three_col_vec) +
-  scale_x_continuous(breaks=seq(0,700,100)) + 
-  geom_vline(xintercept = c(30,400))
-
+  geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black") +
+  scale_linetype_discrete(name="Treatment")
 #########internal insect by year by reach########
 #Insects
 
@@ -577,7 +537,7 @@ Total_Biofilm_Growth_PostCarcass_bae_y2<-as.factor(H_C_16S_env_Bae_y2$Total_Biof
 Reach_Bae_y2<-as.factor(H_C_16S_env_Bae_y2$Reach)
 Source_Bae_y2<-as.factor(H_C_16S_env_Bae_y2$Source)
 
-#Baetis permanova using counts
+#Baetis permanova using unifrac
 adonis(as.dist(H_C_16S_Bae_y1) ~ Reach*Total_Biofilm_Growth_PostCarcass_bae_y1, data=H_C_16S_env_Bae_y1,permutations=999)
 adonis(as.dist(H_C_16S_Bae_y2) ~ Reach*Total_Biofilm_Growth_PostCarcass_bae_y2, data=H_C_16S_env_Bae_y2,permutations=999)
 
@@ -627,14 +587,15 @@ Bae_Y1_Time<-HC_16S_P_map_bae_y1_env$Total_Biofilm_Growth_PostCarcass
 Bae_Y2_Time<-HC_16S_P_map_bae_y2_env$Total_Biofilm_Growth_PostCarcass
 Bae_Y1_RT<-paste(Bae_Y1_Reach, Bae_Y1_Time)
 Bae_Y2_RT<-paste(Bae_Y2_Reach, Bae_Y2_Time)
-#Indicator analysis of biofilms year 1 to see what phyla are driving this change
-HC_p_bae_y1_indic<-multipatt(HC_16S_P_map_bae_y1_com, Bae_Y1_RT, control = how(nperm=999))
-summary(HC_p_bae_y1_indic)
-#indicator analysis found no phyla
-#Indicator analysis of biofilms year 2 to see what phyla are driving this change
-HC_p_bae_y2_indic<-multipatt(HC_16S_P_map_bae_y2_com, Bae_Y2_RT, control = how(nperm=999))
-summary(HC_p_bae_y2_indic)
-#indicator analysis found 1 phylum: Nitrospirae
+#Indicator analysis of Baetids year 1 to see what phyla are driving this change
+HC_p_bae_y1_indic<-signassoc(HC_16S_P_map_bae_y1_com, cluster=Bae_Y1_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_bae_y1_indic[,c(ncol(HC_p_bae_y1_indic),(ncol(HC_p_bae_y1_indic)-1))]
+#indicator analysis found ***Acidobacteria*** indicating Salmon 250 days
+#Indicator analysis of Baetids year 2 to see what phyla are driving this change
+HC_p_bae_y2_indic<-signassoc(HC_16S_P_map_bae_y2_com, cluster=Bae_Y2_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_bae_y2_indic[,c(ncol(HC_p_bae_y2_indic),(ncol(HC_p_bae_y2_indic)-1))]
+#indicator analysis found three taxa: Chloroflexi (1), Cyanobacteria(3), Tenericutes (1) indicating 
+#***Cyanobacteria*** represents Salmon 162 days
 
 #Heptagenia
 #Create heptagenia matrix with metadata
@@ -644,7 +605,7 @@ H_C_16S_Hepta<-H_C_16S_map_Hepta[,18:ncol(H_C_16S_map_Hepta)]
 H_C_16S_Hep_samples<-as.vector(rownames(H_C_16S_Hepta))
 H_C_16S_Hepta<-as.matrix(H_C_16S_Hepta)
 H_C_16S_Hepta<-subset(H_C_16S_Hepta, select=c(H_C_16S_Hep_samples))
-#Baetis environmental variable table
+#Heptagenia environmental variable table
 H_C_16S_env_Hepta<-H_C_16S_map_Hepta[,1:17]
 Total_Biofilm_Growth_PostCarcass_Hep<-as.factor(H_C_16S_env_Hepta$Total_Biofilm_Growth_PostCarcass)
 Reach_Hep<-as.factor(H_C_16S_env_Hepta$Reach)
@@ -670,7 +631,8 @@ sum(colSums(H_C_16S_OTU_map_Hepta[,18:ncol(H_C_16S_OTU_map_Hepta)]))
 #16,800 total sequence reads
 
 #Heptagenia permanova using unifrac distance
-adonis(as.dist(H_C_16S_Hepta) ~ Total_Biofilm_Growth_PostCarcass_Hep, permutations=999)
+adonis(as.dist(H_C_16S_Hepta) ~ Tot_PostCarcass_OTU_Hep, permutations=999)
+#p=0.05
 
 #indicator taxa analysis for heptagenia
 #subset phyla info
@@ -682,450 +644,280 @@ sort(colSums(HC_16S_P_map_hep_com),decreasing=TRUE)
 #Proteobacteria most abundant
 HC_16S_P_map_hep_env<-HC_16S_P_map_hep[1:17]
 
-#create clusters based on time 
-Hep_Time<-HC_16S_P_map_hep_env$Total_Biofilm_Growth_PostCarcass
-#Indicator analysis of biofilms year 1 to see what phyla are driving this change
-HC_p_hep_indic<-multipatt(HC_16S_P_map_hep_com, Hep_Time, control = how(nperm=999))
-summary(HC_p_hep_indic)
-#indicator analysis found three phyla: Crenarchaeota, Bacteroidetes and TM6
+HC_p_hep_indic<-signassoc(HC_16S_P_map_hep_com, cluster=HC_16S_P_map_hep_env$Total_Biofilm_Growth_PostCarcass,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_hep_indic[,c(ncol(HC_p_hep_indic),(ncol(HC_p_hep_indic)-1))]
+#No significant phyla
 
-########here
-#Figure out what taxa are introduced by the carrion and if they persist
+#Simuliidae
+#Create simulidae unifrac matrix with metadata
+H_C_16S_map_Simuliidae<-subset(Hunt_Creek_16S_uni_map, Source=="Simulium" | Source=="Stegopterna")
+#without metadata for simuliidae
+H_C_16S_Sim<-H_C_16S_map_Simuliidae[,18:ncol(H_C_16S_map_Simuliidae)]
+H_C_16S_Sim_samples<-as.vector(rownames(H_C_16S_Sim))
+#UNI-use output of names to subset columns into rows to make square matrix
+H_C_16S_Sim<-as.matrix(H_C_16S_Sim)
+H_C_16S_Sim<-subset(H_C_16S_Sim, select=c(H_C_16S_Sim_samples))
+#Simuliidae environmental variable table
+H_C_16S_env_Sim<-H_C_16S_map_Simuliidae[,1:17]
+Total_Biofilm_Growth_PostCarcass_Sim<-as.factor(H_C_16S_env_Sim$Total_Biofilm_Growth_PostCarcass)
+Reach_Sim<-as.factor(H_C_16S_env_Sim$Reach)
+Source_Sim<-as.factor(H_C_16S_env_Sim$Source)
 
-#Make data table for just biofilm before, biofilm after, and carcass; for each year
-#Year 1 before after and carcass data table
-HC_16S_OTU_map_Y1_CBF<-subset(HC_16S_OTU_map_Y1, Reach=="Salmon")
-HC_16S_OTU_map_Y1_CBF<-subset(HC_16S_OTU_map_Y1_CBF, Date=="10/3/14" | Date=="10/4/14" | Date=="10/18/14")
-HC_16S_OTU_map_Y1_CBF$Date<-gsub("10/3/14","Before",HC_16S_OTU_map_Y1_CBF$Date)
-HC_16S_OTU_map_Y1_CBF$Date<-gsub("10/4/14","Carcass",HC_16S_OTU_map_Y1_CBF$Date)
-HC_16S_OTU_map_Y1_CBF$Date<-as.factor(gsub("10/18/14","After",HC_16S_OTU_map_Y1_CBF$Date))
-rownames(HC_16S_OTU_map_Y1_CBF)<-HC_16S_OTU_map_Y1_CBF[,1]
-HC_16S_OTU_map_Y1_CBF<-HC_16S_OTU_map_Y1_CBF[,-c(1)]
+#Create simulidae count matrix with metadata
+H_C_16S_OTU_map_Simuliidae<-subset(HC_16S_OTU_map, Source=="Simulium" | Source=="Stegopterna")
+#without metadata for simuliidae
+H_C_16S_OTU_Sim<-H_C_16S_OTU_map_Simuliidae[,18:ncol(H_C_16S_OTU_map_Simuliidae)]
+#Simuliidae environmental variable table
+H_C_16S_OTU_env_Sim<-H_C_16S_OTU_map_Simuliidae[,1:17]
+Total_Biofilm_Growth_PostCarcass_OTU_Sim<-as.factor(H_C_16S_OTU_env_Sim$Total_Biofilm_Growth_PostCarcass)
+Reach_OTU_Sim<-as.factor(H_C_16S_OTU_env_Sim$Reach)
+Source_OTU_Sim<-as.factor(H_C_16S_OTU_env_Sim$Source)
 
-#Year 2 before after and carcass data table
-HC_16S_OTU_map_Y2_CBF<-subset(HC_16S_OTU_map_Y2, Reach=="Salmon")
-HC_16S_OTU_map_Y2_CBF<-subset(HC_16S_OTU_map_Y2_CBF, Date=="10/4/15" | Date=="10/9/15" | Date=="10/25/15")
-HC_16S_OTU_map_Y2_CBF$Date<-gsub("10/4/15","Before",HC_16S_OTU_map_Y2_CBF$Date)
-HC_16S_OTU_map_Y2_CBF$Date<-gsub("10/9/15","Carcass",HC_16S_OTU_map_Y2_CBF$Date)
-HC_16S_OTU_map_Y2_CBF$Date<-as.factor(gsub("10/25/15","After",HC_16S_OTU_map_Y2_CBF$Date))
-rownames(HC_16S_OTU_map_Y2_CBF)<-HC_16S_OTU_map_Y2_CBF[,1]
-HC_16S_OTU_map_Y2_CBF<-HC_16S_OTU_map_Y2_CBF[,-c(1)]
+#split up by year
 
-#Subset into OTU's that have 0 in before, but >0 in carcass and after
+#Create simuliidae count matrix for year 1 with metadata
+H_C_16S_OTU_map_Y1_Sim<-subset(H_C_16S_OTU_map_Simuliidae, Year=="1")
+#how many OTUs Simuliidae Y1?
+#Delete OTUs with no observations
+cols_to_drop_OTU_Sim_Y1 = c(rep(TRUE, 17), colSums(H_C_16S_OTU_map_Y1_Sim[,18:ncol(H_C_16S_OTU_map_Y1_Sim)]) > 0)
+H_C_16S_OTU_map_Y1_Sim<-H_C_16S_OTU_map_Y1_Sim[,cols_to_drop_OTU_Sim_Y1]
+#There are 824 OTUs (number of variables - 17 metadata variables)
+sum(colSums(H_C_16S_OTU_map_Y1_Sim[,18:ncol(H_C_16S_OTU_map_Y1_Sim)]))
+#12,000 total sequence reads
+
+#Create simuliidae count matrix for year 1 with metadata
+H_C_16S_OTU_map_Y2_Sim<-subset(H_C_16S_OTU_map_Simuliidae, Year=="2")
+#how many OTUs Simuliidae Y2?
+#Delete OTUs with no observations
+cols_to_drop_OTU_Sim_Y2 = c(rep(TRUE, 17), colSums(H_C_16S_OTU_map_Y2_Sim[,18:ncol(H_C_16S_OTU_map_Y2_Sim)]) > 0)
+H_C_16S_OTU_map_Y2_Sim<-H_C_16S_OTU_map_Y2_Sim[,cols_to_drop_OTU_Sim_Y2]
+#There are 2031 OTUs (number of variables - 17 metadata variables)
+sum(colSums(H_C_16S_OTU_map_Y2_Sim[,18:ncol(H_C_16S_OTU_map_Y2_Sim)]))
+#43,200 total sequence reads
 
 #Year 1
-HC_16S_OTU_map_Y1_CBF_sub<-data.frame(t(HC_16S_OTU_map_Y1_CBF[,18:ncol(HC_16S_OTU_map_Y1_CBF)]))
-names(HC_16S_OTU_map_Y1_CBF_sub)
-HC_16S_OTU_map_Y1_CBF_sub$HC.1<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.1))
-HC_16S_OTU_map_Y1_CBF_sub$HC.2<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.2))
-HC_16S_OTU_map_Y1_CBF_sub$HC.3<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.3))
-HC_16S_OTU_map_Y1_CBF_sub$HC.13<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.13))
-HC_16S_OTU_map_Y1_CBF_sub$HC.14<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.14))
-HC_16S_OTU_map_Y1_CBF_sub$HC.15<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.15))
-HC_16S_OTU_map_Y1_CBF_sub$HC.16<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.16))
-HC_16S_OTU_map_Y1_CBF_sub$HC.17<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.17))
-HC_16S_OTU_map_Y1_CBF_sub$HC.18<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.18))
-HC_16S_OTU_map_Y1_CBF_sub$HC.19<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.19))
-HC_16S_OTU_map_Y1_CBF_sub$HC.20<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.20))
-HC_16S_OTU_map_Y1_CBF_sub$HC.21<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.21))
-HC_16S_OTU_map_Y1_CBF_sub$HC.4<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.4))
-HC_16S_OTU_map_Y1_CBF_sub$HC.5<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.5))
-HC_16S_OTU_map_Y1_CBF_sub$HC.6<-as.numeric(as.character(HC_16S_OTU_map_Y1_CBF_sub$HC.6))
+H_C_16S_map_Sim_y1<-subset(H_C_16S_map_Simuliidae, Year=="1")
+#without metadata for baetis
+H_C_16S_Sim_y1<-H_C_16S_map_Sim_y1[,18:ncol(H_C_16S_map_Sim_y1)]
+H_C_16S_Sim_y1_samples<-as.vector(rownames(H_C_16S_Sim_y1))
+#UNI-use output of names to subset columns into rows to make square matrix
+H_C_16S_Sim_y1<-as.matrix(H_C_16S_Sim_y1)
+H_C_16S_Sim_y1<-subset(H_C_16S_Sim_y1, select=c(H_C_16S_Sim_y1_samples))
+#Simuliidae year 1 environmental variable table
+H_C_16S_env_Sim_y1<-H_C_16S_map_Sim_y1[,1:17]
+Total_Biofilm_Growth_PostCarcass_sim_y1<-as.factor(H_C_16S_env_Sim_y1$Total_Biofilm_Growth_PostCarcass)
+Reach_Sim_y1<-as.factor(H_C_16S_env_Sim_y1$Reach)
+Source_Sim_y1<-as.factor(H_C_16S_env_Sim_y1$Source)
+#Year 2
+H_C_16S_map_Sim_y2<-subset(H_C_16S_map_Simuliidae, Year=="2")
+#without metadata for baetis
+H_C_16S_Sim_y2<-H_C_16S_map_Sim_y2[,18:ncol(H_C_16S_map_Sim_y2)]
+H_C_16S_Sim_y2_samples<-as.vector(rownames(H_C_16S_Sim_y2))
+#UNI-use output of names to subset columns into rows to make square matrix
+H_C_16S_Sim_y2<-as.matrix(H_C_16S_Sim_y2)
+H_C_16S_Sim_y2<-subset(H_C_16S_Sim_y2, select=c(H_C_16S_Sim_y2_samples))
+#Simuliidae year 1 environmental variable table
+H_C_16S_env_Sim_y2<-H_C_16S_map_Sim_y2[,1:17]
+Total_Biofilm_Growth_PostCarcass_sim_y2<-as.factor(H_C_16S_env_Sim_y2$Total_Biofilm_Growth_PostCarcass)
+Reach_Sim_y2<-as.factor(H_C_16S_env_Sim_y2$Reach)
+Source_Sim_y2<-as.factor(H_C_16S_env_Sim_y2$Source)
 
-HC_16S_OTU_map_Y1_CBF_sub$Before.sum<-rowSums(HC_16S_OTU_map_Y1_CBF_sub[,c(1,9,12)])
-HC_16S_OTU_map_Y1_CBF_sub$Carcass.sum<-rowSums(HC_16S_OTU_map_Y1_CBF_sub[,c(2,3,4,5,6,7,8,9,11)])
-HC_16S_OTU_map_Y1_CBF_sub$After.sum<-rowSums(HC_16S_OTU_map_Y1_CBF_sub[,13:15])
+#Simuliidae permanova using unifrac
+adonis(as.dist(H_C_16S_Sim) ~ Reach*Total_Biofilm_Growth_PostCarcass, data=H_C_16S_env_Sim,permutations=999)
+adonis(as.dist(H_C_16S_Sim_y1) ~ Reach*Total_Biofilm_Growth_PostCarcass, data=H_C_16S_env_Sim_y1,permutations=999)
+adonis(as.dist(H_C_16S_Sim_y2) ~ Reach*Total_Biofilm_Growth_PostCarcass, data=H_C_16S_env_Sim_y2,permutations=999)
 
-HC_16S_OTU_map_Y1_CBF_sub<-subset(HC_16S_OTU_map_Y1_CBF_sub, Before.sum==0 & Carcass.sum>0 & After.sum>0)
-CBF_Unique_Y1<-as.factor(row.names(HC_16S_OTU_map_Y1_CBF_sub))
-#The output of row.names is the names of the OTU's that are unique to carcass and biofilms after, not before
+#indicator taxa analysis for Simuliidae
+#subset phyla info
+HC_16S_P_map_sim<-subset(HC_16S_P_map, Source=="Simulium" | Source=="Stegopterna")
+HC_16S_P_map_sim[,1:17]<-sapply(HC_16S_P_map_sim[,1:17], as.factor)
+
+#Year 1
+HC_16S_P_map_sim_y1<-subset(HC_16S_P_map_sim, Year=="1")
+HC_16S_P_map_sim_y1_com<-HC_16S_P_map_sim_y1[,18:ncol(HC_16S_P_map_sim_y1)]
+#find most abundant phyla
+sort(colSums(HC_16S_P_map_sim_y1_com),decreasing=TRUE)
+#Firmicutes most abundant
+HC_16S_P_map_sim_y1_env<-HC_16S_P_map_sim_y1[1:17]
 
 #Year 2
-HC_16S_OTU_map_Y2_CBF_sub<-data.frame(t(HC_16S_OTU_map_Y2_CBF[,15:ncol(HC_16S_OTU_map_Y2_CBF)]))
-names(HC_16S_OTU_map_Y2_CBF_sub)
-HC_16S_OTU_map_Y2_CBF_sub<-as.numeric.factor(HC_16S_OTU_map_Y2_CBF_sub)
-HC_16S_OTU_map_Y2_CBF_sub$HC.59<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.59))
-HC_16S_OTU_map_Y2_CBF_sub$HC.60<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.60))
-HC_16S_OTU_map_Y2_CBF_sub$HC.64<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.64))
-HC_16S_OTU_map_Y2_CBF_sub$HC.65<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.65))
-HC_16S_OTU_map_Y2_CBF_sub$HC.66<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.66))
-HC_16S_OTU_map_Y2_CBF_sub$HC.70<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.70))
-HC_16S_OTU_map_Y2_CBF_sub$HC.71<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.71))
-HC_16S_OTU_map_Y2_CBF_sub$HC.72<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.72))
-HC_16S_OTU_map_Y2_CBF_sub$HC.73<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.73))
-HC_16S_OTU_map_Y2_CBF_sub$HC.74<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.74))
-HC_16S_OTU_map_Y2_CBF_sub$HC.75<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.75))
-HC_16S_OTU_map_Y2_CBF_sub$HC.76<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.76))
-HC_16S_OTU_map_Y2_CBF_sub$HC.77<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.77))
-HC_16S_OTU_map_Y2_CBF_sub$HC.78<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.78))
-HC_16S_OTU_map_Y2_CBF_sub$HC.79<-as.numeric(as.character(HC_16S_OTU_map_Y2_CBF_sub$HC.79))
-HC_16S_OTU_map_Y2_CBF_sub$Before.sum<-rowSums(HC_16S_OTU_map_Y2_CBF_sub[,1:3])
-HC_16S_OTU_map_Y2_CBF_sub$After.sum<-rowSums(HC_16S_OTU_map_Y2_CBF_sub[,4:6])
-HC_16S_OTU_map_Y2_CBF_sub$Carcass.sum<-rowSums(HC_16S_OTU_map_Y2_CBF_sub[,7:16])
-HC_16S_OTU_map_Y2_CBF_sub<-subset(HC_16S_OTU_map_Y2_CBF_sub, Before.sum==0 & Carcass.sum>0 & After.sum>0)
-row.names(HC_16S_OTU_map_Y2_CBF_sub)
-CBF_Unique_Y2<-as.factor(row.names(HC_16S_OTU_map_Y2_CBF_sub))
-#The output of row.names is the names of the OTU's that are unique to carcass and biofilms after, not before
+HC_16S_P_map_sim_y2<-subset(HC_16S_P_map_sim, Year=="2")
+HC_16S_P_map_sim_y2_com<-HC_16S_P_map_sim_y2[,18:ncol(HC_16S_P_map_sim_y2)]
+#find most abundant phyla
+sort(colSums(HC_16S_P_map_sim_y2_com),decreasing=TRUE)
+#Proteobacteria most abundant
+HC_16S_P_map_sim_y2_env<-HC_16S_P_map_sim_y2[1:17]
 
-#Exclude unique OTU's that are found in upstream biofilms in year 1
+#create clusters based on time and reach
+Sim_Y1_Reach<-HC_16S_P_map_sim_y1_env$Reach
+Sim_Y2_Reach<-HC_16S_P_map_sim_y2_env$Reach
+Sim_Y1_Time<-HC_16S_P_map_sim_y1_env$Total_Biofilm_Growth_PostCarcass
+Sim_Y2_Time<-HC_16S_P_map_sim_y2_env$Total_Biofilm_Growth_PostCarcass
+Sim_Y1_RT<-paste(Sim_Y1_Reach, Sim_Y1_Time)
+Sim_Y2_RT<-paste(Sim_Y2_Reach, Sim_Y2_Time)
 
-#Create data table with only upstream biofilms for year 1 then find unique
-HC_16S_OTU_map_Y1_BF_US<-subset(HC_16S_OTU_map_Y1, Reach=="Control" & Source=="Biofilm")
-rownames(HC_16S_OTU_map_Y1_BF_US)<-HC_16S_OTU_map_Y1_BF_US[,1]
-HC_16S_OTU_map_Y1_BF_US<-HC_16S_OTU_map_Y1_BF_US[,-c(1)]
-HC_16S_OTU_map_Y1_BF_US_unique<-data.frame(t(HC_16S_OTU_map_Y1_BF_US[,15:ncol(HC_16S_OTU_map_Y1_BF_US)]))
-HC_16S_OTU_map_Y1_BF_US_unique$OTU<-row.names(HC_16S_OTU_map_Y1_BF_US_unique)
-HC_16S_OTU_map_Y1_BF_US_unique<-HC_16S_OTU_map_Y1_BF_US_unique[HC_16S_OTU_map_Y1_BF_US_unique$OTU %in% CBF_Unique_Y1,]
-HC_16S_OTU_map_Y1_BF_US_unique$HC.10<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.10))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.11<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.11))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.25<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.25))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.26<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.26))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.27<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.27))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.12<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.12))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.31<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.31))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.32<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.32))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.33<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.33))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.37<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.37))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.38<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.38))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.39<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.39))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.7<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.7))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.43<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.43))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.44<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.44))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.45<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.45))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.8<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.8))
-HC_16S_OTU_map_Y1_BF_US_unique$HC.9<-as.numeric(as.character(HC_16S_OTU_map_Y1_BF_US_unique$HC.9))
-HC_16S_OTU_map_Y1_BF_US_unique$Sums<-rowSums(HC_16S_OTU_map_Y1_BF_US_unique[,1:18])
-HC_16S_OTU_map_Y1_BF_US_unique<-subset(HC_16S_OTU_map_Y1_BF_US_unique, Sums==0)
-row.names(HC_16S_OTU_map_Y1_BF_US_unique)
-CBF_really_unique_Y1<-as.factor(row.names(HC_16S_OTU_map_Y1_BF_US_unique))
-#output are OTU's that are unique to carcass and biofilms, not found before or upstream for year 1 only
+#Indicator analysis of Simuliids year 1 to see what phyla are driving this change
+HC_p_sim_y1_indic<-signassoc(HC_16S_P_map_sim_y1_com, cluster=Sim_Y1_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_sim_y1_indic[,c(ncol(HC_p_sim_y1_indic),(ncol(HC_p_sim_y1_indic)-1))]
+#indicator analysis found no phyla
+#Indicator analysis of Simuliids year 2 to see what phyla are driving this change
+HC_p_sim_y2_indic<-signassoc(HC_16S_P_map_sim_y2_com, cluster=Sim_Y2_RT,  mode=0, alternative = "two.sided",control = how(nperm=999))
+HC_p_sim_y2_indic[,c(ncol(HC_p_sim_y2_indic),(ncol(HC_p_sim_y2_indic)-1))]
+#indicator analysis found Bacteroidetes (4) and Proteobacteria (2)
+#Only ***Bacteroidetes*** represents Salmon reach (day 221)
 
-#Repeat with unique from year 2
-#Create data table with only upstream biofilms for year 2 then find unique
-HC_16S_OTU_map_Y2_BF_US<-subset(HC_16S_OTU_map_Y2, Reach=="Control" & Source=="Biofilm")
-rownames(HC_16S_OTU_map_Y2_BF_US)<-HC_16S_OTU_map_Y2_BF_US[,1]
-HC_16S_OTU_map_Y2_BF_US<-HC_16S_OTU_map_Y2_BF_US[,-c(1)]
-HC_16S_OTU_map_Y2_BF_US_unique<-data.frame(t(HC_16S_OTU_map_Y2_BF_US[,15:ncol(HC_16S_OTU_map_Y2_BF_US)]))
-HC_16S_OTU_map_Y2_BF_US_unique$OTU<-row.names(HC_16S_OTU_map_Y2_BF_US_unique)
-HC_16S_OTU_map_Y2_BF_US_unique<-HC_16S_OTU_map_Y2_BF_US_unique[HC_16S_OTU_map_Y2_BF_US_unique$OTU %in% CBF_Unique_Y2,]
-HC_16S_OTU_map_Y2_BF_US_unique<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.62<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.62))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.63<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.63))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.67<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.67))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.68<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.68))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.69<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.69))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.80<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.80))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.81<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.81))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.82<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.82))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.94<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.94))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.95<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.95))
-HC_16S_OTU_map_Y2_BF_US_unique$HC.96<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_unique$HC.96))
-HC_16S_OTU_map_Y2_BF_US_unique$Sums<-rowSums(HC_16S_OTU_map_Y2_BF_US_unique[,1:12])
-HC_16S_OTU_map_Y2_BF_US_unique<-subset(HC_16S_OTU_map_Y2_BF_US_unique, Sums==0)
-row.names(HC_16S_OTU_map_Y2_BF_US_unique)
-CBF_really_unique_Y2<-row.names(HC_16S_OTU_map_Y2_BF_US_unique)
-#output are OTU's that are unique to carcass and biofilms, not found before or upstream for year 2 only
+#Create figure with the three indicator taxa faceted with population graphs
+HC_16S_P_map_bae$k__Bacteria.p__Acidobacteria<-as.numeric(HC_16S_P_map_bae$"k__Bacteria.p__Acidobacteria")
+AciBae <- summarySE(HC_16S_P_map_bae, measurevar="k__Bacteria.p__Acidobacteria", groupvars=c("Days_Since_Study_Start","Reach"))
+AciBae[is.na(AciBae)] <- 0
+AciBae$Days_Since_Study_Start<-as.numeric(AciBae$Days_Since_Study_Start)
+AciBae$Taxa<-rep("Acidobacteria", 15)
+names(AciBae)[names(AciBae) == 'k__Bacteria.p__Acidobacteria'] <- 'Mean'
+HC_16S_P_map_bae$k__Bacteria.p__Cyanobacteria<-as.numeric(HC_16S_P_map_bae$"k__Bacteria.p__Cyanobacteria")
+CyBae <- summarySE(HC_16S_P_map_bae, measurevar="k__Bacteria.p__Cyanobacteria", groupvars=c("Days_Since_Study_Start","Reach"))
+CyBae[is.na(CyBae)] <- 0
+CyBae$Days_Since_Study_Start<-as.numeric(CyBae$Days_Since_Study_Start)
+CyBae$Taxa<-rep("Cyanobacteria", 15)
+names(CyBae)[names(CyBae) == 'k__Bacteria.p__Cyanobacteria'] <- 'Mean'
+IndBae<-rbind(AciBae,CyBae)
+IndBae$Source<-rep("Baetis brunneicolor", 30)
+HC_16S_P_map_sim$k__Bacteria.p__Bacteroidetes<-as.numeric(HC_16S_P_map_sim$"k__Bacteria.p__Bacteroidetes")
+BacSim <- summarySE(HC_16S_P_map_sim, measurevar="k__Bacteria.p__Bacteroidetes", groupvars=c("Days_Since_Study_Start","Reach"))
+BacSim[is.na(BacSim)] <- 0
+BacSim$Days_Since_Study_Start<-as.numeric(BacSim$Days_Since_Study_Start)
+BacSim$Taxa<-rep("Bacteroidetes", 8)
+names(BacSim)[names(BacSim) == 'k__Bacteria.p__Bacteroidetes'] <- 'Mean'
+BacSim$Source<-rep("Stegopterna mutata", 8)
+IndInv<-rbind(IndBae,BacSim)
+IndInv$Type<-rep("Internal Indicator Microbe", 38)
+#Add macroinvertebrate population data
+#Already run through macroinvertebrate code, so dataframes are uploaded
+names(HC_M_Matrix)[names(HC_M_Matrix) == "Hexapoda Ephemeroptera Baetidae"] <- 'Baetidae_count'
+btdfac<-summarySE(HC_M_Matrix, measurevar="Baetidae_count", groupvars=c("Days_Since_Study_Start", "Reach"))
+btdfac$Taxa<-rep("Baetis brunneicolor", 26)
+btdfac$Source<-rep("Baetis brunneicolor", 26)
+btdfac$Type<-rep("Macroinvertebrate", 26)
+names(btdfac)[names(btdfac) == "Baetidae_count"] <- 'Mean'
+names(HC_M_Matrix)[names(HC_M_Matrix) == "Hexapoda Diptera Simuliidae"] <- 'Simuliidae_count'
+simfac<-summarySE(HC_M_Matrix, measurevar="Simuliidae_count", groupvars=c("Days_Since_Study_Start", "Reach"))
+simfac$Taxa<-rep("Stegopterna mutata", 26)
+simfac$Source<-rep("Stegopterna mutata", 26)
+simfac$Type<-rep("Macroinvertebrate", 26)
+names(simfac)[names(simfac) == "Simuliidae_count"] <- 'Mean'
+IntPlot<-rbind(IndInv,btdfac,simfac)
+IntPlot$Type <- factor(IntPlot$Type, c("Macroinvertebrate", "Internal Indicator Microbe"))
+IntPlot$Taxa <- factor(IntPlot$Taxa, c("Baetis brunneicolor", "Stegopterna mutata", "Cyanobacteria", "Acidobacteria", "Bacteroidetes"))
+ggplot(IntPlot, aes(x=Days_Since_Study_Start, y=Mean, colour=Taxa)) + 
+  geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=.1) +
+  geom_line(size=1.5, aes(linetype=Reach)) +
+  geom_point(size=3) +
+  xlab("Days since study start") +
+  ylab("Abundance") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
+  scale_colour_brewer(palette="Dark2") +
+  scale_x_continuous(breaks=seq(0,700,200)) + 
+  geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black") +
+  scale_linetype_discrete(name="Treatment") +
+  facet_grid(Type ~ Source, scales="free")
 
-#Find out if any of the 293 really unique OTUs in year 1 persist in year 2 biofilms, both US and DS
-HC_16S_OTU_map_Y2_BF<-subset(HC_16S_OTU_map_Y2, Source=="Biofilm")
-rownames(HC_16S_OTU_map_Y2_BF)<-HC_16S_OTU_map_Y2_BF[,1]
-HC_16S_OTU_map_Y2_BF<-HC_16S_OTU_map_Y2_BF[,-c(1)]
-HC_16S_OTU_map_Y2_BF_r_unique<-data.frame(t(HC_16S_OTU_map_Y2_BF[,15:ncol(HC_16S_OTU_map_Y2_BF)]))
-HC_16S_OTU_map_Y2_BF_r_unique$OTU<-row.names(HC_16S_OTU_map_Y2_BF_r_unique)
-HC_16S_OTU_map_Y2_BF_r_unique<-HC_16S_OTU_map_Y2_BF_r_unique[HC_16S_OTU_map_Y2_BF_r_unique$OTU %in% CBF_really_unique_Y1,]
-HC_16S_OTU_map_Y2_BF_r_unique$HC.58<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.58))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.59<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.59))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.60<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.60))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.61<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.61))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.62<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.62))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.63<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.63))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.64<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.64))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.65<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.65))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.66<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.66))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.67<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.67))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.68<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.68))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.69<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.69))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.80<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.80))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.81<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.81))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.82<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.82))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.83<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.83))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.84<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.84))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.85<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.85))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.91<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.91))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.92<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.92))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.93<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.93))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.94<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.94))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.95<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.95))
-HC_16S_OTU_map_Y2_BF_r_unique$HC.96<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_r_unique$HC.96))
-HC_16S_OTU_map_Y2_BF_r_unique$Sums<-rowSums(HC_16S_OTU_map_Y2_BF_r_unique[,1:24])
-HC_16S_OTU_map_Y2_BF_r_unique<-subset(HC_16S_OTU_map_Y2_BF_r_unique, Sums>0)
-HC_16S_OTU_map_Y2_BF_r_unique_p<-row.names(HC_16S_OTU_map_Y2_BF_r_unique)
+#Figure out what taxa are introduced by the carrion and if they persist in biofilms/internal invertebrates
+HC_16S_OTU_map_ag<-HC_16S_OTU_map
+HC_16S_OTU_map_ag$DateEnv<-as.factor(paste(HC_16S_OTU_map_ag$Date,HC_16S_OTU_map_ag$Reach,HC_16S_OTU_map_ag$Source))
+HC_16S_OTU_map_ag<-aggregate(HC_16S_OTU_map_ag[18:(ncol(HC_16S_OTU_map_ag)-1)], by=list(Date=HC_16S_OTU_map_ag$Date, Reach=HC_16S_OTU_map_ag$Reach, Source=HC_16S_OTU_map_ag$Source, Year=HC_16S_OTU_map_ag$Year, DateEnv=HC_16S_OTU_map_ag$DateEnv), FUN=sum)
+str(HC_16S_OTU_map_ag)
+HC_16S_OTU_map_ag_m<-melt(HC_16S_OTU_map_ag, id=(c("Date","Reach","Source","DateEnv", "Year")))
+levels(HC_16S_OTU_map_ag_m$DateEnv)
+#find names of OTUs that are found in control biofilms and delete them
+HC_16S_OTU_names_cont<-filter(HC_16S_OTU_map_ag_m, (Reach=="Control" & Source=="Biofilm" & value>=1) | (Date=="10/3/14" & value>=1))$variable
+#delete OTUs from this list
+HC_16S_OTU_map_ag_m_ucar<-HC_16S_OTU_map_ag_m[!(HC_16S_OTU_map_ag_m$variable %in% HC_16S_OTU_names_cont),]
+HC_16S_OTU_map_ag_m_ucar<-subset(HC_16S_OTU_map_ag_m_ucar, (DateEnv=="10/4/14 Salmon Carcass" & value>=1))
+str(HC_16S_OTU_map_ag_m_ucar)
+length(unique(HC_16S_OTU_map_ag_m_ucar$variable))
+HC_16S_OTU_ucar_names<-unique(HC_16S_OTU_map_ag_m_ucar$variable)
+#4103 OTUs were introduced via carrion the first year
+#keep OTUs from this list that are in downstream biofilms
+HC_16S_OTU_dstbf<-subset(HC_16S_OTU_map_ag_m, Reach=="Salmon" & Source=="Biofilm" & Date!="10/3/14" & value>=1)
+HC_16S_OTU_map_ag_m_ucabf<-HC_16S_OTU_dstbf[(HC_16S_OTU_dstbf$variable %in% HC_16S_OTU_ucar_names),]
+length(unique(HC_16S_OTU_map_ag_m_ucabf$variable))
+HC_16S_OTU_ucardsbf_names<-unique(HC_16S_OTU_map_ag_m_ucabf$variable)
+#404 OTUs were introduced via carrion the first year and persist in ds biofilms
+#keep OTUs from this list that are in downstream invertebrates
+HC_16S_OTU_dsti<-subset(HC_16S_OTU_map_ag_m, Reach=="Salmon" & Source!="Biofilm" & Source!="Carcass" & Date!="9/5/14" & value>=1)
+HC_16S_OTU_map_ag_m_ucabfi<-HC_16S_OTU_dsti[(HC_16S_OTU_dsti$variable %in% HC_16S_OTU_ucardsbf_names),]
+length(unique(HC_16S_OTU_map_ag_m_ucabfi$variable))
+HC_16S_OTU_ucardsbfi_names<-unique(HC_16S_OTU_map_ag_m_ucabfi$variable)
+#54 OTUs were introduced via carrion the first year and persist in ds biofilms and are found in ds invertebrates
+#now make sure these are never found in control reaches
+HC_16S_control_OTU_names<-unique(subset(HC_16S_OTU_map_ag_m, Reach=="Control")$variable)
+HC_16S_OTU_map_ag_m_ucabfinc<-HC_16S_OTU_map_ag_m_ucabfi[!HC_16S_OTU_map_ag_m_ucabfi$variable %in% HC_16S_control_OTU_names,]
+length(unique(HC_16S_OTU_map_ag_m_ucabfinc$variable))
+HC_16S_OTU_ucardsbfinc_names<-unique(HC_16S_OTU_map_ag_m_ucabfinc$variable)
+#There are no OTUs that are introduced via carrion in the first year, persist in ds biofilms, are found in ds invertebrates and never found in control reaches
+#now see if there are any OTUs that are unique to carrion, ds invertebrates and not found in us,control invertebrates 
+HC_16S_OTU_dsti<-subset(HC_16S_OTU_map_ag_m, Reach=="Salmon" & Source!="Biofilm" & Source!="Carcass" & Date!="9/5/14" & value>=1)
+HC_16S_OTU_map_ag_m_ucai<-HC_16S_OTU_dsti[(HC_16S_OTU_dsti$variable %in% HC_16S_OTU_ucar_names),]
+length(unique(HC_16S_OTU_map_ag_m_ucai$variable))
+HC_16S_OTU_ucardsi_names<-unique(HC_16S_OTU_map_ag_m_ucai$variable)
+HC_16S_OTU_map_ag_m_ucainc<-HC_16S_OTU_map_ag_m_ucai[!HC_16S_OTU_map_ag_m_ucai$variable %in% HC_16S_control_OTU_names,]
+length(unique(HC_16S_OTU_map_ag_m_ucainc$variable))
+HC_16S_OTU_ucardsinc_names<-unique(HC_16S_OTU_map_ag_m_ucainc$variable)
+#No OTUs are introduced via carcasses and persist in ds invertebrates and are not found in US, control reaches
+HC_16S_OTU_ucardsbf_Y1_names<-HC_16S_OTU_ucardsbf_names
+#now move on to year 2
+#find names of OTUs that are found in year 1 and delete them
+HC_16S_OTU_names_y1c<-filter(HC_16S_OTU_map_ag_m, (Year=="1" | (Reach=="Control" & Source=="Biofilm") | Date=="10/4/15") & value>=1)$variable
+#delete OTUs from this list
+HC_16S_OTU_map_ag_m_ucar2<-HC_16S_OTU_map_ag_m[!(HC_16S_OTU_map_ag_m$variable %in% HC_16S_OTU_names_y1c),]
+HC_16S_OTU_map_ag_m_ucar2<-subset(HC_16S_OTU_map_ag_m_ucar2, (DateEnv=="10/9/15 Salmon Carcass" & value>=1))
+str(HC_16S_OTU_map_ag_m_ucar2)
+length(unique(HC_16S_OTU_map_ag_m_ucar2$variable))
+HC_16S_OTU_ucar2_names<-unique(HC_16S_OTU_map_ag_m_ucar2$variable)
+#857 unique OTUs were introduced via carrion in the second year
+#keep OTUs from this list that are in downstream biofilms year 2
+HC_16S_OTU_dstbfy2<-subset(HC_16S_OTU_map_ag_m, Reach=="Salmon" & Source=="Biofilm" & Year=="2" & Date!="10/4/15" & value>=1)
+HC_16S_OTU_map_ag_m_ucabfy2<-HC_16S_OTU_dstbfy2[(HC_16S_OTU_dstbfy2$variable %in% HC_16S_OTU_ucar2_names),]
+length(unique(HC_16S_OTU_map_ag_m_ucabfy2$variable))
+HC_16S_OTU_ucardsbfy2_names<-unique(HC_16S_OTU_map_ag_m_ucabfy2$variable)
+#42 OTUs were introduced via carrion the second year and persist in ds biofilms
+#keep OTUs from this list that are in downstream invertebrates year 2
+HC_16S_OTU_dstiy2<-subset(HC_16S_OTU_map_ag_m, Reach=="Salmon" & Source!="Biofilm" & Source!="Carcass" & Date!="10/4/15" & Year=="2" & value>=1)
+HC_16S_OTU_map_ag_m_ucabfiy2<-HC_16S_OTU_dstiy2[(HC_16S_OTU_dstiy2$variable %in% HC_16S_OTU_ucardsbfy2_names),]
+length(unique(HC_16S_OTU_map_ag_m_ucabfiy2$variable))
+HC_16S_OTU_ucardsbfiy2_names<-unique(HC_16S_OTU_map_ag_m_ucabfiy2$variable)
+#4 OTUs were introduced via carrion the second year and persist in ds biofilms and are found in ds invertebrates
+#now make sure these are never found in control reaches
+HC_16S_OTU_map_ag_m_ucabfincy2<-HC_16S_OTU_map_ag_m_ucabfiy2[!HC_16S_OTU_map_ag_m_ucabfiy2$variable %in% HC_16S_control_OTU_names,]
+length(unique(HC_16S_OTU_map_ag_m_ucabfincy2$variable))
+HC_16S_OTU_ucardsbfincy2_names<-unique(HC_16S_OTU_map_ag_m_ucabfincy2$variable)
+#There are no OTUs that are introduced via carrion in the second year, persist in ds biofilms, are found in ds invertebrates and never found in control reaches
 
-#of the "Y1 really unique persisting" OTU's, find out which ones are not found US biofilms in Y2
-HC_16S_OTU_map_Y2_BF_US_unique<-data.frame(t(HC_16S_OTU_map_Y2_BF_US[,15:ncol(HC_16S_OTU_map_Y2_BF_US)]))
-HC_16S_OTU_map_Y2_BF_US_unique$OTU<-row.names(HC_16S_OTU_map_Y2_BF_US_unique)
-HC_16S_OTU_map_Y2_BF_US_r_unique<-HC_16S_OTU_map_Y2_BF_US_unique[HC_16S_OTU_map_Y2_BF_US_unique$OTU %in% HC_16S_OTU_map_Y2_BF_r_unique_p,]
-HC_16S_OTU_map_Y2_BF_US_r_unique$X58<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X58))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X59<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X59))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X60<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X60))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X64<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X64))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X65<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X65))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X66<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X66))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X79<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X79))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X80<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X80))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X81<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X81))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X94<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X94))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X95<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X95))
-HC_16S_OTU_map_Y2_BF_US_r_unique$X96<-as.numeric(as.character(HC_16S_OTU_map_Y2_BF_US_r_unique$X96))
-HC_16S_OTU_map_Y2_BF_US_r_unique$Sums<-rowSums(HC_16S_OTU_map_Y2_BF_US_r_unique[,1:12])
-HC_16S_OTU_map_Y2_BF_US_unique<-subset(HC_16S_OTU_map_Y2_BF_US_r_unique, Sums>0)
-HC_CBF_U_OTUs<-row.names(HC_16S_OTU_map_Y2_BF_US_unique)
-
-#Find which of the 37 unique OTUs are the highest in abundance for both years
-HC_U_sub<-Hunt_Creek_16S
-HC_U_sub$OTU<-row.names(HC_U_sub)
-HC_U_sub_CBF<-HC_U_sub[HC_U_sub$OTU %in% HC_CBF_U_OTUs,]
-HC_U_sub_CBF<-as.numeric(HC_U_sub_CBF)
-HC_U_sub_CBF$Sums<-rowSums(HC_U_sub_CBF[,1:96])
-#Find top sums to utilize in data table for presentations
-
-#Are any of the 37 unique taxa found in internal insect microbiomes?
-#Make data table for just insect samples
-Hunt_Creek_16S_OTU_map_I<-subset(HC_16S_OTU_map, Source=="Baetis" | Source=="Rhyacophila" | Source=="Stegopterna")
-rownames(Hunt_Creek_16S_OTU_map_I)<-Hunt_Creek_16S_OTU_map_I[,1]
-Hunt_Creek_16S_OTU_map_I<-Hunt_Creek_16S_OTU_map_I[,-c(1)]
-Hunt_Creek_16S_OTU_map_I_U<-data.frame(t(Hunt_Creek_16S_OTU_map_I[,14:ncol(Hunt_Creek_16S_OTU_map_I)]))
-Hunt_Creek_16S_OTU_map_I$OTU<-row.names(Hunt_Creek_16S_OTU_map_I)
-Hunt_Creek_16S_OTU_map_I_U<-Hunt_Creek_16S_OTU_map_I[Hunt_Creek_16S_OTU_map_I$OTU %in% HC_CBF_U_OTUs,]
-Hunt_Creek_16S_OTU_map_I_U$HC.46<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.46))
-Hunt_Creek_16S_OTU_map_I_U$HC.47<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.47))
-Hunt_Creek_16S_OTU_map_I_U$HC.48<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.48))
-Hunt_Creek_16S_OTU_map_I_U$HC.49<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.49))
-Hunt_Creek_16S_OTU_map_I_U$HC.50<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.50))
-Hunt_Creek_16S_OTU_map_I_U$HC.51<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.51))
-Hunt_Creek_16S_OTU_map_I_U$HC.52<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.52))
-Hunt_Creek_16S_OTU_map_I_U$HC.53<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.53))
-Hunt_Creek_16S_OTU_map_I_U$HC.54<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.54))
-Hunt_Creek_16S_OTU_map_I_U$HC.55<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.55))
-Hunt_Creek_16S_OTU_map_I_U$HC.56<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.56))
-Hunt_Creek_16S_OTU_map_I_U$HC.57<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.57))
-Hunt_Creek_16S_OTU_map_I_U$HC.86<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.86))
-Hunt_Creek_16S_OTU_map_I_U$HC.87<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.87))
-Hunt_Creek_16S_OTU_map_I_U$HC.88<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.88))
-Hunt_Creek_16S_OTU_map_I_U$HC.89<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.89))
-Hunt_Creek_16S_OTU_map_I_U$HC.90<-as.numeric(as.character(Hunt_Creek_16S_OTU_map_I_U$HC.90))
-Hunt_Creek_16S_OTU_map_I_U$Sums<-rowSums(Hunt_Creek_16S_OTU_map_I[,1:17])
-Hunt_Creek_16S_OTU_map_I_U<-subset(Hunt_Creek_16S_OTU_map_I, Sums>0)
-HC_unique_CBFI_OTUs<-Hunt_Creek_16S_OTU_map_I_U$OTU
-
-HC_ICBF_I_16S_OTUs<-Hunt_Creek_16S_OTU_map_I[Hunt_Creek_16S_OTU_map_I$OTU %in% HC_unique_CBFI_OTUs,]
-
-#Find abundance of certain OTU's in salmon carcasses in year 1
-HC_16S_OTU_map_Y1_S<-subset(HC_16S_OTU_map_Y1, Source=="Carcass")
-HC_16S_OTU_map_Y1_S$denovo2027<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo2027))
-HC_16S_OTU_map_Y1_S$denovo164486<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo164486))
-HC_16S_OTU_map_Y1_S$denovo130121<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo130121))
-HC_16S_OTU_map_Y1_S$denovo183000<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo183000))
-HC_16S_OTU_map_Y1_S$denovo102338<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo102338))
-HC_16S_OTU_map_Y1_S$denovo114115<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo114115))
-HC_16S_OTU_map_Y1_S$denovo144456<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo144456))
-HC_16S_OTU_map_Y1_S$denovo177870<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo177870))
-HC_16S_OTU_map_Y1_S$denovo39627<-as.numeric(as.character(HC_16S_OTU_map_Y1_S$denovo39627))
-
-sum(HC_16S_OTU_map_Y1_S$denovo2027)
-sum(HC_16S_OTU_map_Y1_S$denovo164486)
-sum(HC_16S_OTU_map_Y1_S$denovo130121)
-sum(HC_16S_OTU_map_Y1_S$denovo183000)
-sum(HC_16S_OTU_map_Y1_S$denovo39627)
-sum(HC_16S_OTU_map_Y1_S$denovo102338)
-sum(HC_16S_OTU_map_Y1_S$denovo114115)
-sum(HC_16S_OTU_map_Y1_S$denovo144456)
-sum(HC_16S_OTU_map_Y1_S$denovo177870)
-
-
-#Find abundance of certain OTU's in biofilms DS for both years
-HC_16S_OTU_map_BF_DS<-subset(HC_16S_OTU_map, Source=="Biofilm" & Reach=="Salmon")
-HC_16S_OTU_map_BF_DS$denovo2027<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo2027))
-HC_16S_OTU_map_BF_DS$denovo164486<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo164486))
-HC_16S_OTU_map_BF_DS$denovo130121<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo130121))
-HC_16S_OTU_map_BF_DS$denovo183000<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo183000))
-HC_16S_OTU_map_BF_DS$denovo39627<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo39627))
-HC_16S_OTU_map_BF_DS$denovo102338<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo102338))
-HC_16S_OTU_map_BF_DS$denovo114115<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo114115))
-HC_16S_OTU_map_BF_DS$denovo144456<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo144456))
-HC_16S_OTU_map_BF_DS$denovo177870<-as.numeric(as.character(HC_16S_OTU_map_BF_DS$denovo177870))
-
-sum(HC_16S_OTU_map_BF_DS$denovo2027)
-sum(HC_16S_OTU_map_BF_DS$denovo164486)
-sum(HC_16S_OTU_map_BF_DS$denovo130121)
-sum(HC_16S_OTU_map_BF_DS$denovo183000)
-sum(HC_16S_OTU_map_BF_DS$denovo39627)
-sum(HC_16S_OTU_map_BF_DS$denovo102338)
-sum(HC_16S_OTU_map_BF_DS$denovo114115)
-sum(HC_16S_OTU_map_BF_DS$denovo144456)
-sum(HC_16S_OTU_map_BF_DS$denovo177870)
-
-
-#Create melted file (this step takes a while, so prepare to wait. Skip if just doing community analysis like NMDS)
-HC_16S_OTU_map_m<-melt(HC_16S_OTU_map, id=c("Row.names"))
-HC_16S_OTU_map_m<-data.frame(HC_16S_OTU_map_m)
-names(HC_16S_OTU_map_m)
-
-#Delete zeros
-HC_16S_OTU_map_m<-subset(HC_16S_OTU_map_m, value > 0)
-
-####################################################
-#Now work with individual populations at the phyla level to visualize time by reach interaction for specific taxa
-#######################################################
-
-#Now, work with phyla level data for 16S
-
-#melt to long format
-names(HC_16S_P_map[,1:14])
-str(HC_16S_P_map[,1:14])
-HC_16S_P_map$Row.names<-as.factor(HC_16S_P_map$Row.names)
-HC_16S_P_map$Month<-as.factor(HC_16S_P_map$Month)
-HC_16S_P_map$Day<-as.factor(HC_16S_P_map$Day)
-HC_16S_P_map$YYYY<-as.factor(HC_16S_P_map$YYYY)
-HC_16S_P_map$Total_Biofilm_Growth<-as.factor(HC_16S_P_map$Total_Biofilm_Growth)
-HC_16S_P_map$Total_Biofilm_Growth_PostCarcass<-as.factor(HC_16S_P_map$Total_Biofilm_Growth_PostCarcass)
-HC_16S_P_map$Year<-as.factor(HC_16S_P_map$Year)
-HC_16S_P_map_m<-melt(HC_16S_P_map, 
-    id.vars=c("Row.names", "BarcodeSequence", "LinkerPrimerSequence", "Month", "Day", "YYYY", "Date", "Reach", "Subreach", "Source", "Total_Biofilm_Growth", "Total_Biofilm_Growth_PostCarcass", "Year", "Description"))
-
-#Delete zeros in melted file
-HC_16S_P_map_m<-subset(HC_16S_P_map_m, value > 0)
-
-###################
-#Sourcetracker plots
-###################
-
-
-#Upload sourcetracker table obtained using QIIME
-HC_16S_SourceTracker<-read.table("~/Desktop/sourcetracker_out/sink_predictions.txt", sep="\t", header = T)
-row.names(HC_16S_SourceTracker)<-HC_16S_SourceTracker[,1]
-HC_16S_SourceTracker$SampleID<-NULL
-#Merge metadata
-HC_16S_SourceTracker_map <-merge(Hunt_Creek_16S_map, HC_16S_SourceTracker, by=0)
-
-
-#Pie graphs for insect control
-
-#subset insect control
-HC_16S_SourceTracker_map_ic<-subset(HC_16S_SourceTracker_map, Env=="InsectControl")
-HC_16S_SourceTracker_map_ic<-HC_16S_SourceTracker_map_ic[,18:ncol(HC_16S_SourceTracker_map_ic)]
-Sums_ic<-colSums(HC_16S_SourceTracker_map_ic)
-lables_ic<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_ic, labels=lables_ic, main="All Control Insects", col=four_col_vec)
-#subset by insect taxa in control
-#Rhyacophila
-HC_16S_SourceTracker_map_icr<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Rhyacophila")
-HC_16S_SourceTracker_map_icr<-HC_16S_SourceTracker_map_icr[,18:ncol(HC_16S_SourceTracker_map_icr)]
-Sums_icr<-colSums(HC_16S_SourceTracker_map_icr)
-lables_icr<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_icr, labels=lables_icr, main="Control Rhyacophila", col=four_col_vec)
-#Stegopterna
-HC_16S_SourceTracker_map_ics<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Stegopterna")
-HC_16S_SourceTracker_map_ics<-HC_16S_SourceTracker_map_ics[,18:ncol(HC_16S_SourceTracker_map_ics)]
-Sums_ics<-colSums(HC_16S_SourceTracker_map_ics)
-lables_ics<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_ics, labels=lables_ics, main="Control Stegopterna", col=four_col_vec)
-#Baetis
-HC_16S_SourceTracker_map_icb<-subset(HC_16S_SourceTracker_map, Env=="InsectControl" & Source=="Baetis")
-HC_16S_SourceTracker_map_icb<-HC_16S_SourceTracker_map_icb[,18:ncol(HC_16S_SourceTracker_map_icb)]
-Sums_icb<-colSums(HC_16S_SourceTracker_map_icb)
-lables_icb<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_icb, labels=lables_icb, main="Control Baetis", col=four_col_vec)
-
-#Pie graphs for insect treatment
-
-#subset insect treatment
-HC_16S_SourceTracker_map_it<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon")
-HC_16S_SourceTracker_map_it<-HC_16S_SourceTracker_map_it[,18:ncol(HC_16S_SourceTracker_map_it)]
-Sums_it<-colSums(HC_16S_SourceTracker_map_it)
-lables_it<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_it, labels=lables_it, main="All Treatment Insects", col=four_col_vec)
-#subset by insect taxa in control
-#Rhyacophila
-HC_16S_SourceTracker_map_itr<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Rhyacophila")
-HC_16S_SourceTracker_map_itr<-HC_16S_SourceTracker_map_itr[,18:ncol(HC_16S_SourceTracker_map_itr)]
-Sums_itr<-colSums(HC_16S_SourceTracker_map_itr)
-lables_itr<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_itr, labels=lables_itr, main="Treatment Rhyacophila", col=four_col_vec)
-#Stegopterna
-HC_16S_SourceTracker_map_its<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Stegopterna")
-HC_16S_SourceTracker_map_its<-HC_16S_SourceTracker_map_its[,18:ncol(HC_16S_SourceTracker_map_its)]
-Sums_its<-colSums(HC_16S_SourceTracker_map_its)
-lables_its<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_its, labels=lables_its, main="Treatment Stegopterna", col=four_col_vec)
-#Baetis
-HC_16S_SourceTracker_map_itb<-subset(HC_16S_SourceTracker_map, Env=="InsectSalmon" & Source=="Baetis")
-HC_16S_SourceTracker_map_itb<-HC_16S_SourceTracker_map_itb[,18:ncol(HC_16S_SourceTracker_map_itb)]
-Sums_itb<-colSums(HC_16S_SourceTracker_map_itb)
-lables_itb<-c("Control Biofilms", "Treatment Biofilms", "Salmon Carcass", "Unknown")
-pie(Sums_itb, labels=lables_itb, main="Treatment Baetis", col=four_col_vec)
-
-###########################################################
-#Carcass and biofilm comparisons
-##########################################################
-#Make nmds plot for carcass and biofilms for year 1
-HC_16S_map_Y1_CBF<-subset(HC_16S_OTU_map_Y1, Reach=="Salmon")
-HC_16S_map_Y1_CBF<-subset(HC_16S_map_Y1_CBF, Date=="10/3/14" | Date=="10/4/14" | Date=="10/18/14")
-HC_16S_map_Y1_CBF_com<-HC_16S_map_Y1_CBF[,18:ncol(HC_16S_map_Y1_CBF)]
-HC_16S_map_Y1_CBF_env<-HC_16S_map_Y1_CBF[,1:17]
-Y1_CBF<-as.factor(HC_16S_map_Y1_CBF_env$Total_Biofilm_Growth)
-Y1_CBF<-gsub("0","Carcass",Y1_CBF)
-Y1_CBF<-gsub("14","Biofilms Before",Y1_CBF)
-Y1_CBF<-gsub("28","Biofilms After",Y1_CBF)
-Y1_CBF<-as.factor(Y1_CBF)
-levels(Y1_CBF)
-HC_CBF_NMDS_Y1<-metaMDS(HC_16S_map_Y1_CBF_com, distance="jaccard")
-ordiplot(HC_CBF_NMDS_Y1, type="n", main="Year 1 Biofilms Before and After Carcass")
-with(HC_CBF_NMDS_Y1, points(HC_CBF_NMDS_Y1, display="sites", col=three_col_vec[Y1_CBF], pch=19, pt.bg=three_col_vec))
-with(HC_CBF_NMDS_Y1, legend("topleft", legend=levels(Y1_CBF), bty="n", col=three_col_vec, pch=19, pt.bg=three_col_vec))
-with(HC_CBF_NMDS_Y1, ordiellipse(HC_CBF_NMDS_Y1, Y1_CBF, kind="se", conf=0.95, lwd=2, col="#a6cee3", show.groups = "Biofilms After"))
-with(HC_CBF_NMDS_Y1, ordiellipse(HC_CBF_NMDS_Y1, Y1_CBF, kind="se", conf=0.95, lwd=2, col="#1f78b4", show.groups = "Biofilms Before"))
-with(HC_CBF_NMDS_Y1, ordiellipse(HC_CBF_NMDS_Y1, Y1_CBF, kind="se", conf=0.95, lwd=2, col="#b2df8a", show.groups = "Carcass"))
-
-#UNI-Make nmds plot for carcass and biofilms for year 1
-HC_16S_uni_map_Y1_CBF<-subset(H_C_16S_uni_map_Y1, Reach=="Salmon")
-HC_16S_uni_map_Y1_CBF<-subset(HC_16S_uni_map_Y1_CBF, Date=="10/3/14" | Date=="10/4/14" | Date=="10/18/14")
-HC_16S_uni_Y1_CBF_samples<-as.vector(rownames(HC_16S_uni_map_Y1_CBF))
-HC_16S_uni_Y1_CBF_com<-as.matrix(HC_16S_uni_map_Y1_CBF)
-HC_16S_uni_Y1_CBF_com<-subset(HC_16S_uni_Y1_CBF_com, select=c(HC_16S_uni_Y1_CBF_samples))
-HC_16S_uni_map_Y1_CBF_env<-HC_16S_uni_map_Y1_CBF[,1:16]
-Y1_CBF<-as.factor(HC_16S_uni_map_Y1_CBF_env$Total_Biofilm_Growth)
-Y1_CBF<-gsub("0","Carcass",Y1_CBF)
-Y1_CBF<-gsub("14","Biofilms Before",Y1_CBF)
-Y1_CBF<-gsub("28","Biofilms After",Y1_CBF)
-Y1_CBF<-as.factor(Y1_CBF)
-levels(Y1_CBF)
-HC_CBF_NMDS_Y1<-metaMDS(as.dist(HC_16S_uni_map_Y1_CBF_com))
-ordiplot(HC_CBF_NMDS_Y1, type="n", main="Biofilms Before and After and Carcass")
-with(HC_CBF_NMDS_Y1, points(HC_CBF_NMDS_Y1, display="sites", col=three_col_vec[Y1_CBF], pch=19, pt.bg=three_col_vec))
-with(HC_CBF_NMDS_Y1, legend("topleft", legend=levels(Y1_CBF), bty="n", col=three_col_vec, pch=19, pt.bg=three_col_vec))
-HC_16S_uni_Y1_CBF_BF<-subset(HC_16S_uni_map_Y1_CBF, Source=="Biofilm")
-HC_16S_uni_Y1_CBF_BF_samples<-as.vector(rownames(HC_16S_uni_Y1_CBF_BF))
-HC_16S_uni_Y1_CBF_BF_com<-as.matrix(HC_16S_uni_Y1_CBF_BF)
-HC_16S_uni_Y1_CBF_BF_com<-subset(HC_16S_uni_Y1_CBF_BF_com, select=c(HC_16S_uni_Y1_CBF_BF_samples))
-HC_16S_uni_Y1_CBF_BF_env<-HC_16S_uni_Y1_CBF_BF[,1:16]
-adonis(as.dist(HC_16S_uni_Y1_CBF_BF_com) ~ SourceSink, data=HC_16S_uni_Y1_CBF_BF_env, permutations=999)
-#Make nmds plot for carcass and biofilms for year 2
-HC_16S_map_Y2_CBF<-subset(HC_16S_OTU_map_Y2, Reach=="Salmon")
-HC_16S_map_Y2_CBF<-subset(HC_16S_map_Y2_CBF, Date=="10/4/15" | Date=="10/9/15" | Date=="10/25/15")
-HC_16S_map_Y2_CBF_com<-HC_16S_map_Y2_CBF[,18:ncol(HC_16S_map_Y1_CBF)]
-HC_16S_map_Y2_CBF_env<-HC_16S_map_Y2_CBF[,1:17]
-Y2_CBF<-as.factor(HC_16S_map_Y2_CBF_env$Total_Biofilm_Growth)
-Y2_CBF<-gsub("0","Carcass",Y2_CBF)
-Y2_CBF<-gsub("14","Biofilms Before",Y2_CBF)
-Y2_CBF<-gsub("35","Biofilms After",Y2_CBF)
-Y2_CBF<-as.factor(Y2_CBF)
-levels(Y2_CBF)
-HC_CBF_NMDS_Y2<-metaMDS(HC_16S_map_Y2_CBF_com, distance="jaccard")
-ordiplot(HC_CBF_NMDS_Y2, type="n", main="Year 2 Biofilms Before and After Carcass")
-with(HC_CBF_NMDS_Y2, points(HC_CBF_NMDS_Y2, display="sites", col=three_col_vec[Y2_CBF], pch=19, pt.bg=three_col_vec))
-with(HC_CBF_NMDS_Y2, legend("topleft", legend=levels(Y2_CBF), bty="n", col=three_col_vec, pch=19, pt.bg=three_col_vec))
-with(HC_CBF_NMDS_Y2, ordiellipse(HC_CBF_NMDS_Y2, Y2_CBF, kind="se", conf=0.95, lwd=2, col="#a6cee3", show.groups = "Biofilms After"))
-with(HC_CBF_NMDS_Y2, ordiellipse(HC_CBF_NMDS_Y2, Y2_CBF, kind="se", conf=0.95, lwd=2, col="#1f78b4", show.groups = "Biofilms Before"))
-with(HC_CBF_NMDS_Y2, ordiellipse(HC_CBF_NMDS_Y2, Y2_CBF, kind="se", conf=0.95, lwd=2, col="#b2df8a", show.groups = "Carcass"))
-
+#find out the relative abundance of the unique OTUs
+str(HC_16S_OTU_map)
+HC_16S_OTU_map_uc1<-HC_16S_OTU_map[,c(1:17, which(names(HC_16S_OTU_map) %in% HC_16S_OTU_ucardsbf_Y1_names))]
+HC_16S_OTU_map_uc1$RowSum<-rowSums(HC_16S_OTU_map_uc1[18:ncol(HC_16S_OTU_map_uc1)])
+HC_16S_uc1_tot<-subset(HC_16S_OTU_map_uc1, Reach=="Salmon" & (Source=="Carcass" | Source=="Biofilm"), select=c(1:17,422))
+UY1<-summarySE(HC_16S_uc1_tot, measurevar="RowSum", groupvars=c("Days_Since_Study_Start", "Source"))
+UY1$Year<-rep("One", 14)
+HC_16S_OTU_map_uc2<-HC_16S_OTU_map[,c(1:17, which(names(HC_16S_OTU_map) %in% HC_16S_OTU_ucardsbfy2_names))]
+HC_16S_OTU_map_uc2$RowSum<-rowSums(HC_16S_OTU_map_uc2[18:ncol(HC_16S_OTU_map_uc2)])
+HC_16S_uc2_tot<-subset(HC_16S_OTU_map_uc2, Year=="2" & Reach=="Salmon" & (Source=="Carcass" | Source=="Biofilm"), select=c(1:17,60))
+UY2<-summarySE(HC_16S_uc2_tot, measurevar="RowSum", groupvars=c("Days_Since_Study_Start", "Source"))
+UY2$Year<-rep("Two", 7)
+UY<-rbind(UY1,UY2)
+#now visualize these unique OTUs
+ggplot(UY, aes(x=Days_Since_Study_Start, y=RowSum, shape=Year, color=Source)) + 
+  geom_errorbar(aes(ymin=RowSum-se, ymax=RowSum+se), width=.1) +
+  geom_point(size=3) +
+  geom_line(size=1.5, data=UY[UY$Source!="Carcass", ])+
+  xlab("Days since study start") +
+  ylab("Mean Introduced OTU Abundance") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
+  scale_color_manual(values=two_col_vec_taxa) +
+  scale_x_continuous(breaks=seq(0,700,100))
