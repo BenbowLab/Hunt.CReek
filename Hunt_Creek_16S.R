@@ -812,7 +812,7 @@ ggplot(IntPlot, aes(x=Days_Since_Study_Start, y=Mean, colour=Taxa)) +
   geom_line(size=1.5, aes(linetype=Reach)) +
   geom_point(size=3) +
   xlab("Days since study start") +
-  ylab("Abundance") +
+  ylab("Mean Abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),

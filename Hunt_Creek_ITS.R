@@ -153,7 +153,7 @@ HC_ITS_OTU_y1_com<-HC_ITS_OTU_y1[,16:ncol(HC_ITS_OTU_y1)]
 HC_ITS_OTU_y1_samples<-as.vector(rownames(HC_ITS_OTU_y1))
 #Biofilm year 1 environmental variable table
 HC_ITS_OTU_y1_env<-HC_ITS_OTU_y1[,1:15]
-Total_Biofilm_Growth_PostCarcass_Y1<-as.factor(HC_ITS_OTU_y1_env$Total_Biofilm_Growth_PostCarcass)
+HC_ITS_OTU_y1_env$Total_Biofilm_Growth_PostCarcass_Y1<-as.factor(HC_ITS_OTU_y1_env$Total_Biofilm_Growth_PostCarcass)
 Reach_Y1<-as.factor(HC_ITS_OTU_y1_env$Reach)
 
 #Create biofilm matrix for year 2 with metadata
@@ -168,17 +168,17 @@ sum(colSums(HC_ITS_OTU_y2[,16:ncol(HC_ITS_OTU_y2)]))
 #without metadata for biofilms in year 2
 HC_ITS_OTU_y2_com<-HC_ITS_OTU_y2[,16:ncol(HC_ITS_OTU_y2)]
 HC_ITS_OTU_y2_samples<-as.vector(rownames(HC_ITS_OTU_y2))
-#Biofilm year 1 environmental variable table
+#Biofilm year 2 environmental variable table
 HC_ITS_OTU_y2_env<-HC_ITS_OTU_y2[,1:15]
-Total_Biofilm_Growth_PostCarcass_Y2<-as.factor(HC_ITS_OTU_y2_env$Total_Biofilm_Growth_PostCarcass)
+HC_ITS_OTU_y2_env$Total_Biofilm_Growth_PostCarcass_Y2<-as.factor(HC_ITS_OTU_y2_env$Total_Biofilm_Growth_PostCarcass)
 Reach_Y2<-as.factor(HC_ITS_OTU_y2_env$Reach)
 
 #Year 1 permanova
-adonis(HC_ITS_OTU_y1_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass, data=HC_ITS_OTU_y1_env, method="jaccard", permutations=999)
+adonis(HC_ITS_OTU_y1_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass_Y1, data=HC_ITS_OTU_y1_env, method="jaccard", permutations=999)
 #No significant factors
 
 #Year 2 permanova
-adonis(HC_ITS_OTU_y2_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass, data=HC_ITS_OTU_y2_env, method="jaccard", permutations=999)
+adonis(HC_ITS_OTU_y2_com ~ Reach*Year*Total_Biofilm_Growth_PostCarcass_Y2, data=HC_ITS_OTU_y2_env, method="jaccard", permutations=999)
 #No significant factors
 
 #################
