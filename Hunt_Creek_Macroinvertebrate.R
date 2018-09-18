@@ -334,7 +334,7 @@ ggplot(hep, aes(x=Days_Since_Study_Start, y=Heptageniidae, linetype=Treatment)) 
   geom_line(size=1.5) +
   geom_point(size=2) +
   xlab("Days since study start") +
-  ylab("Heptagenia flavescens relative abundance") +
+  ylab("Mean Heptagenia relative abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
