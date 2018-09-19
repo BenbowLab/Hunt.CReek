@@ -329,12 +329,14 @@ HC_M_Matrix$Heptageniidae<-(HC_M_Matrix$"Hexapoda Ephemeroptera Heptageniidae"/H
 Heptageniidplot<-data.frame(HC_M_Matrix[,c(56,6,61)])
 Heptageniidplot$Days_Since_Study_Start<-as.numeric(Heptageniidplot$Days_Since_Study_Start)
 hep<-summarySE(Heptageniidplot, measurevar="Heptageniidae", groupvars=c("Days_Since_Study_Start", "Treatment"))
+hep$Treatment<-factor(hep$Treatment, c("Salmon","Control"))
+Hepylab<-expression(paste("Mean ", italic("Heptagenia"), " relative abundance"))
 ggplot(hep, aes(x=Days_Since_Study_Start, y=Heptageniidae, linetype=Treatment)) + 
-  geom_errorbar(aes(ymin=Heptageniidae-se, ymax=Heptageniidae+se), width=.1) +
+  geom_errorbar(aes(ymin=Heptageniidae-se, ymax=Heptageniidae+se), width=.1, linetype=1) +
   geom_line(size=1.5) +
   geom_point(size=2) +
   xlab("Days since study start") +
-  ylab("Mean Heptagenia relative abundance") +
+  ylab(Hepylab) +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20,margin=margin(40,0,0,0)),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),

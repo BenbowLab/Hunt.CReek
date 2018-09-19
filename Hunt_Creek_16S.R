@@ -95,14 +95,14 @@ ggplot(HC_Sh_sum_m_sd, aes(x=Sequences_per_sample.x, y=mean, colour=Source.x)) +
   geom_errorbar(aes(ymin=mean-StandEr, ymax=mean+StandEr), width=1) +
   geom_line(size=1.5) +
   geom_point(size=1.5) +
-  xlab("Sequences per sample") +
-  ylab("Shannon H' Diversity") +
+  xlab("Number of reads sampled") +
+  ylab("Mean Shannon H' diversity") +
   labs(colour = "Source") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=20),axis.title.y=element_text(size=20),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=three_col_vec)
+  scale_color_manual(values=c("#999999", "#377eb8", "#e41a1c"))
 
 #####################################
 #Upload data tables generated in QIIME and manipulate to make "r friendly"
@@ -230,10 +230,10 @@ HC_NMDS_uni_c<-metaMDS(as.dist(H_C_16S_uni_car_com))
 HC_NMDS_uni_c
 stressplot(HC_NMDS_uni_c)
 ordiplot(HC_NMDS_uni_c, type="n", main="Salmon carcass 16S communities")
-with(HC_NMDS_uni_c, points(HC_NMDS_uni_c, display="sites", col=two_col_vec[HC_16S_uni_car_Year], pch=19, pt.bg=two_col_vec))
-with(HC_NMDS_uni_c, legend("topleft", legend=levels(HC_16S_uni_car_Year), bty="n", col=two_col_vec, pch=19, pt.bg=two_col_vec))
+with(HC_NMDS_uni_c, points(HC_NMDS_uni_c, display="sites", col = "black", pch=c(15,17)[HC_16S_uni_car_Year], pt.bg="black"))
+with(HC_NMDS_uni_c, legend("topleft", legend=levels(HC_16S_uni_car_Year), bty="n", col="black",pch=c(15,17), pt.bg="black"))
 with(HC_NMDS_uni_c, ordiellipse(HC_NMDS_uni_c, HC_16S_uni_car_Year, kind="se", conf=0.95, lwd=2, col="black", show.groups = "Year 1"))
-with(HC_NMDS_uni_c, ordiellipse(HC_NMDS_uni_c, HC_16S_uni_car_Year, kind="se", conf=0.95, lwd=2, col="bisque2", show.groups = "Year 2"))
+with(HC_NMDS_uni_c, ordiellipse(HC_NMDS_uni_c, HC_16S_uni_car_Year, kind="se", conf=0.95, lwd=2, col="black", show.groups = "Year 2"))
 with(HC_NMDS_uni_c, legend("topright", legend="2D Stress: 0.09", bty="n"))
 
 #upload phyla level info and run indicator analysis for carcass/generate box plots
@@ -450,17 +450,18 @@ CyBF <- summarySE(HC_16S_P_map_bf, measurevar="k__Bacteria.p__Cyanobacteria", gr
 names(CyBF)[names(CyBF) == 'k__Bacteria.p__Cyanobacteria'] <- 'Mean'
 CyBF$Phylum<-rep("Cyanobacteria",24)
 IndBF<-rbind(ProBF,CyBF)
+IndBF$Reach<-factor(IndBF$Reach, c("Salmon", "Control"))
 ggplot(IndBF, aes(x=Days_Since_Study_Start, y=Mean, colour=Phylum)) + 
   geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=.1) +
   geom_line(size=1.5, aes(linetype=Reach)) +
   geom_point(size=3) +
   xlab("Days since study start") +
-  ylab("Mean Abundance") +
+  ylab("Mean abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=two_col_vec_taxa) +
+  scale_color_manual(values=c("#4daf4a", "#a65628")) +
   scale_x_continuous(breaks=seq(0,700,100)) + 
   geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black") +
   scale_linetype_discrete(name="Treatment")
@@ -807,17 +808,19 @@ names(simfac)[names(simfac) == "Simuliidae_count"] <- 'Mean'
 IntPlot<-rbind(IndInv,btdfac,simfac)
 IntPlot$Type <- factor(IntPlot$Type, c("Macroinvertebrate", "Internal Indicator Microbe"))
 IntPlot$Taxa <- factor(IntPlot$Taxa, c("Baetis brunneicolor", "Stegopterna mutata", "Cyanobacteria", "Acidobacteria", "Bacteroidetes"))
+IntPlot$Reach<-factor(IntPlot$Reach, c("Salmon","Control"))
 ggplot(IntPlot, aes(x=Days_Since_Study_Start, y=Mean, colour=Taxa)) + 
   geom_errorbar(aes(ymin=Mean-se, ymax=Mean+se), width=.1) +
   geom_line(size=1.5, aes(linetype=Reach)) +
-  geom_point(size=3) +
+  geom_point(size=2) +
   xlab("Days since study start") +
-  ylab("Mean Abundance") +
+  ylab("Mean abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
-        legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_colour_brewer(palette="Dark2") +
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 16, face='italic'), strip.text.y=element_text(size=16)) +
+  scale_color_manual(values=c("#e6ab02", "#984ea3", "#4daf4a", "#e7298a","#d95f02")) +
   scale_x_continuous(breaks=seq(0,700,200)) + 
   geom_vline(xintercept = c(30,400), linetype = "dotted", colour = "black") +
   scale_linetype_discrete(name="Treatment") +
@@ -914,10 +917,11 @@ ggplot(UY, aes(x=Days_Since_Study_Start, y=RowSum, shape=Year, color=Source)) +
   geom_point(size=3) +
   geom_line(size=1.5, data=UY[UY$Source!="Carcass", ])+
   xlab("Days since study start") +
-  ylab("Mean Introduced OTU Abundance") +
+  ylab("Mean introduced OTU abundance") +
   theme(panel.background = element_rect(fill = "white", colour = "grey50"),
         axis.title.x=element_text(size=18),axis.title.y=element_text(size=18),
         axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
         legend.title=element_text(size=20),legend.text = element_text(size=16)) +
-  scale_color_manual(values=two_col_vec_taxa) +
-  scale_x_continuous(breaks=seq(0,700,100))
+  scale_color_manual(values=c("#377eb8", "#e41a1c")) +
+  scale_x_continuous(breaks=seq(0,700,100)) +
+  scale_shape_manual(values=c(15, 17))
